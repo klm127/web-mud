@@ -1,0 +1,11 @@
+{
+    "name": "sdc-webmud-ts",
+    "version": "0.0.0",
+    "license": "MIT",
+    "scripts": {},
+    "private": false,
+    "dependencies": {},
+    "devDependencies": {
+        "typescript": "~5.0.2"
+    }
+}

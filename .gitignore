@@ -1,0 +1,3 @@
+production.env 
+.backup
+typescript/node_modules

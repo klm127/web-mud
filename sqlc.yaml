@@ -1,0 +1,11 @@
+version: "2"
+sql:
+  - schema: ".docker/postgres/"
+    queries: "query"
+    engine: "postgresql"
+    gen:
+      go:
+        package: "dbg"
+        out: "db/dbg"
+        emit_prepared_queries: true
+        emit_params_struct_pointers: true
