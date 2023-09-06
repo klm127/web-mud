@@ -28,12 +28,11 @@ func main() {
 		return
 	}
 	fmt.Println(green("HTTP Server listening on port "+arg.Config.Http.Port()) + ".")
-	fmt.Println("Link to http: " + blue("http://localhost:"+arg.Config.Http.Port()))
+	fmt.Println(blue("http://localhost:" + arg.Config.Http.Port()))
 
 	err = server.Run("localhost:" + arg.Config.Http.Port())
 	if err != nil {
 		fmt.Println(red("Server exited. %s", err.Error()))
 	}
 
-	_ = gin.Default()
 }

@@ -6,5 +6,6 @@ func CreateServer() *gin.Engine {
 	serv := gin.Default()
 	serv.Static("static", "server/static")
 	serv.LoadHTMLGlob("server/templates/**/*")
+	serv.GET("/", home)
 	return serv
 }
