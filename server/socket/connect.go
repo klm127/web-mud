@@ -1,6 +1,7 @@
 package socket
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,6 +28,37 @@ func handleWebSocket(c *gin.Context) {
 	}
 	sockets = append(sockets, conn)
 	conn.WriteMessage(1, []byte("Hello, Socket!"))
+	getSocketMessages(conn)
 	conn.Close()
 
+}
+
+func getSocketMessages(conn *websocket.Conn) {
+	close_requested := false
+	for !close_requested {
+		mtype, data, err := conn.ReadMessage()
+		if err != nil {
+			break
+		}
+
+		if mtype != 1 {
+			conn.WriteMessage(1, []byte("I couldn't understand that message."))
+			continue
+		}
+
+		response := "I didn't understand that. Try 'list' to see available commands."
+		command := string(data)
+
+		switch command {
+		case "list":
+			response = "Commands are list, conns, quit"
+		case "conns":
+			response = fmt.Sprintf("There are %d connections", len(sockets))
+		case "quit":
+			close_requested = true
+			response = "Disconnecting."
+		}
+		conn.WriteMessage(1, []byte(response))
+	}
+	_ = close_requested
 }
