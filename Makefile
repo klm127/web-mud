@@ -51,7 +51,7 @@ endif
 # 		Combination commands
 # ------------------------------------------------------------
  # make all
-all: network db db.admin.run sqlc 
+all: network.create db db.admin.run sqlc 
  # remove all
 remove: db.rm db.admin.rm network.rm
  # rebuild all except network
@@ -69,7 +69,7 @@ db: db.run db.conn
  # 'database run' runs the mysql docker container from the image that was built.
 db.run:
 	docker run -p 5432:$(db_port) \
-	-v $(CURDIR)/.docker/postgres:/docker-entrypoint-initdb.d \
+	-v '$(CURDIR)/.docker/postgres:/docker-entrypoint-initdb.d' \
 	-e POSTGRES_USER=$(db_user) \
 	-e POSTGRES_PASSWORD=$(db_pw) \
 	-e POSTGRES_DATABASE=$(db) \

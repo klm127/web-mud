@@ -26,6 +26,7 @@ func handleWebSocket(c *gin.Context) {
 		return
 	}
 	sockets = append(sockets, conn)
-	c.JSON(http.StatusFound, msg.ServerMsg("Saved socket connection."))
+	conn.WriteMessage(1, []byte("Hello, Socket!"))
+	conn.Close()
 
 }
