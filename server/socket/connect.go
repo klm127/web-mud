@@ -51,12 +51,18 @@ func getSocketMessages(conn *websocket.Conn) {
 
 		switch command {
 		case "list":
-			response = "Commands are list, conns, quit"
+			response = "Commands are list, conns, quit, underly, subprotocol, remote"
 		case "conns":
 			response = fmt.Sprintf("There are %d connections", len(sockets))
 		case "quit":
 			close_requested = true
 			response = "Disconnecting."
+		case "underly":
+			response = conn.UnderlyingConn().LocalAddr().String()
+		case "subprotocol":
+			response = conn.Subprotocol()
+		case "remote":
+			response = conn.UnderlyingConn().RemoteAddr().String()
 		}
 		conn.WriteMessage(1, []byte(response))
 	}
