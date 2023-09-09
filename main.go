@@ -7,6 +7,7 @@ import (
 	"github.com/pwsdc/web-mud/arg"
 	"github.com/pwsdc/web-mud/db"
 	"github.com/pwsdc/web-mud/server"
+	"github.com/pwsdc/web-mud/server/workers"
 	"github.com/pwsdc/web-mud/util/console"
 )
 
@@ -30,6 +31,7 @@ func main() {
 	fmt.Println(green("HTTP Server listening on port "+arg.Config.Http.Port()) + ".")
 	fmt.Println(blue("http://localhost:" + arg.Config.Http.Port()))
 
+	workers.StartAllWorkers()
 	err = server.Run("localhost:" + arg.Config.Http.Port())
 	if err != nil {
 		fmt.Println(red("Server exited. %s", err.Error()))

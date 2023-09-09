@@ -113,6 +113,7 @@ export class Terminal {
 		if (part.Link) {
 			partEl.style.textDecoration = 'underline'
 			partEl.style.cursor = 'pointer'
+			partEl.classList.add('link-el')
 			let my = this
 			partEl.addEventListener('click', () => {
 				my.input.value = part.Link!

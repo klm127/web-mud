@@ -8,8 +8,9 @@ import (
 )
 
 type argConfig struct {
-	Db   dbConfig
-	Http httpConfig
+	Db     dbConfig
+	Http   httpConfig
+	Socket socketConfig
 }
 
 // Global configuration - set from flags or env on program start
@@ -21,6 +22,7 @@ func Parse() {
 	Config = argConfig{}
 	Config.Db.setFlags()
 	Config.Http.setFlags()
+	Config.Socket.setFlags()
 	flag.Parse()
 
 	env_path := flag.Arg(0)
@@ -32,6 +34,7 @@ func Parse() {
 		}
 		Config.Db.parseEnv()
 		Config.Http.parseEnv()
+		Config.Socket.parseEnv()
 	}
 }
 
@@ -43,5 +46,9 @@ func (self *argConfig) PrintLogs() {
 	httpl := *self.Http.GetLogs()
 	for _, v := range httpl {
 		fmt.Printf("HTTP Config: %v\n", v)
+	}
+	socketl := *self.Socket.GetLogs()
+	for _, v := range socketl {
+		fmt.Printf("Socket Config: %v\n", v)
 	}
 }

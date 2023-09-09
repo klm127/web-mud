@@ -3,6 +3,7 @@ package base
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/pwsdc/web-mud/server/actor/message"
@@ -16,6 +17,9 @@ type Actor struct {
 	conn            *websocket.Conn
 	Commands        map[string]*CommandSet
 	close_requested bool
+	time_opened     time.Time
+	time_lastTalked time.Time
+	questioning     *QuestionResult
 }
 
 func (actor *Actor) Disconnect() {
@@ -34,7 +38,7 @@ Finally it starts the actor.listenSocket() go routine, where input will be proce
 */
 func CreateActor(conn *websocket.Conn) {
 	id := nextId()
-	actor := Actor{id, conn, map[string]*CommandSet{}, false}
+	actor := Actor{id, conn, map[string]*CommandSet{}, false, time.Now(), time.Now(), nil}
 	fmt.Println("Creating actor")
 	for s, v := range defaultCommandSets {
 		fmt.Println("Adding", s, "to default actor commands.")
@@ -44,6 +48,9 @@ func CreateActor(conn *websocket.Conn) {
 	go actor.listenSocket()
 }
 
+/*
+Goroutine loop that listens for socket messages and dispatches them. Also updates time since last talked.
+*/
 func (actor *Actor) listenSocket() {
 	for !actor.close_requested {
 		_, data, err := actor.conn.ReadMessage()
@@ -51,14 +58,26 @@ func (actor *Actor) listenSocket() {
 			actor.ErrorMessage(err.Error())
 			break
 		}
+		actor.time_lastTalked = time.Now()
 		actor.ParseInput(string(data))
 	}
 }
 
+/*
+Determines the appropriate command the user wanted from their input string. Sends an error if no command can be found.
+*/
 func (actor *Actor) ParseInput(s string) {
 	s = strings.TrimSpace(s)
 	if len(s) == 0 {
 		actor.ErrorMessage("No command entered.")
+	}
+	// input is redirected to the questioning system, if active
+	if actor.questioning != nil {
+		actor.questioning.InputReceived(actor, s)
+		if actor.questioning != nil {
+			actor.questioning.AskNext(actor)
+		}
+		return
 	}
 	items := strings.SplitN(s, " ", 2)
 	matches := make([]*CommandSet, 0, 1)
@@ -93,4 +112,16 @@ func (actor *Actor) Message(m []byte) {
 
 func (actor *Actor) ErrorMessage(txt string) {
 	actor.conn.WriteMessage(1, message.New().Color("red").Text(txt).Bytes())
+}
+
+func (actor *Actor) GetTimeLastTalked() time.Time {
+	return actor.time_lastTalked
+}
+
+func (actor *Actor) GetTimeOpened() time.Time {
+	return actor.time_opened
+}
+
+func (actor *Actor) GetTimeSinceLastTalked() time.Duration {
+	return time.Now().Sub(actor.time_opened)
 }
