@@ -1,28 +1,28 @@
-import { CreateWebSocket } from "./socket/socket.js"
-import { Terminal } from "./terminal/Terminal.js";
-
+import { CreateWebSocket } from './socket/socket.js'
+import { Terminal } from './terminal/Terminal.js'
 
 function RunGame() {
 	const terminal = new Terminal(document.body)
-	var socket : WebSocket
+	var socket: WebSocket
 	try {
-		socket = CreateWebSocket();
-	} catch(e) {
-		terminal.localError("Failed to connect socket! " + e)
+		socket = CreateWebSocket()
+	} catch (e) {
+		terminal.localError('Failed to connect socket! ' + e)
 		return
 	}
 	socket.onopen = (event) => {
 		terminal.enableInput()
-		terminal.localMessage("Socket connected.")
+		terminal.localMessage('Socket connected.')
 	}
 
 	socket.onmessage = (event) => {
-		terminal.serverMessage("Server: " +  event.data)
+		// terminal.serverMessage("Server: " +  event.data)
+		terminal.parseServerMessage(event.data)
 		terminal.enableInput()
 	}
 
 	socket.onclose = (event) => {
-		terminal.serverMessage("Server connection closed.")
+		terminal.serverMessage('Server connection closed.')
 		terminal.disableInput()
 	}
 

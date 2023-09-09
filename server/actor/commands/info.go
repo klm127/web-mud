@@ -37,7 +37,7 @@ func help(actor *base.Actor, msg string) {
 				}
 				s += "   "
 			}
-			m.Text(s)
+			m.Text(s).Indent(10)
 		}
 	}
 	actor.Message(m.Bytes())
