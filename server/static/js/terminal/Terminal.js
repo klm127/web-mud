@@ -1,18 +1,24 @@
 import { Dom } from '../util/dom.js';
+import { ScrollerToBottom, } from '../util/stickScroller.js';
 export class Terminal {
     el;
     messageArea;
+    outerScrollArea;
     inputArea;
     input;
     onInput;
     constructor(parent) {
         this.el = Dom.el('div', 'terminal');
+        this.outerScrollArea = Dom.el('div');
+        this.outerScrollArea.id = 'terminal-message-scroller';
         this.messageArea = Dom.el('div');
+        this.outerScrollArea.append(this.messageArea);
+        this.messageArea.id = 'terminal-message-area';
         this.inputArea = Dom.el('div');
         this.input = Dom.el('input');
         this.input.type = 'text';
         this.inputArea.append(this.input);
-        this.el.append(this.messageArea, this.inputArea);
+        this.el.append(this.outerScrollArea, this.inputArea);
         this.input.addEventListener('keydown', this.getInputKeypressCallback());
         this.onInput = () => { };
         parent.append(this.el);
@@ -40,27 +46,36 @@ export class Terminal {
             this.input.value = '';
         }
     }
+    addMessageEl(el) {
+        if (this.messageArea.firstChild != null) {
+            this.messageArea.insertBefore(el, this.messageArea.firstChild);
+        }
+        else {
+            this.messageArea.append(el);
+        }
+        ScrollerToBottom(this.outerScrollArea);
+    }
     localError(s) {
         const div = Dom.textEl('div', s, ['terminal-msg', 'terminal-local-error']);
-        this.messageArea.append(div);
+        this.addMessageEl(div);
     }
     serverError(s) {
         const div = Dom.textEl('div', s, ['terminal-msg', 'terminal-server-error']);
-        this.messageArea.append(div);
+        this.addMessageEl(div);
     }
     serverMessage(s) {
         const div = Dom.textEl('div', s, ['terminal-msg', 'terminal-server-msg']);
-        this.messageArea.append(div);
+        this.addMessageEl(div);
     }
     parseServerMessage(s) {
         const msg = JSON.parse(s);
         if (msg.Parts.length == 0) {
-            this.messageArea.append(Dom.textEl('div', '* empty message *'));
+            this.addMessageEl(Dom.textEl('div', '* empty message *'));
         }
         else {
             const div = Dom.el('div');
             this.parseMessagePartRecurse(msg, 0, div);
-            this.messageArea.append(div);
+            this.addMessageEl(div);
         }
     }
     parseMessagePartRecurse(s, index, lastParent) {
@@ -104,6 +119,6 @@ export class Terminal {
     }
     localMessage(s) {
         const div = Dom.textEl('div', s, ['terminal-msg', 'terminal-local-msg']);
-        this.messageArea.append(div);
+        this.addMessageEl(div);
     }
 }

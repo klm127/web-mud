@@ -1,3 +1,13 @@
 /*
     Styling for the console.
 */
+
+#terminal-message-scroller {
+  height: 400px;
+  overflow-y: scroll;
+}
+
+#terminal-message-area {
+  display: flex;
+  flex-direction: column-reverse;
+}

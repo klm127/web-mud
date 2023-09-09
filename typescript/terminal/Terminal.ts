@@ -1,4 +1,8 @@
 import { Dom } from '../util/dom.js'
+import {
+	ScrollerToBottom,
+	StickScrollerOnInterval,
+} from '../util/stickScroller.js'
 
 type ServMessage = {
 	Parts: ServMessagePart[]
@@ -15,17 +19,22 @@ type ServMessagePart = {
 export class Terminal {
 	el: HTMLDivElement
 	messageArea: HTMLDivElement
+	outerScrollArea: HTMLElement
 	inputArea: HTMLDivElement
 	input: HTMLInputElement
 	onInput: (inputString: string) => void
 	constructor(parent: HTMLElement) {
 		this.el = Dom.el('div', 'terminal')
+		this.outerScrollArea = Dom.el('div')
+		this.outerScrollArea.id = 'terminal-message-scroller'
 		this.messageArea = Dom.el('div')
+		this.outerScrollArea.append(this.messageArea)
+		this.messageArea.id = 'terminal-message-area'
 		this.inputArea = Dom.el('div')
 		this.input = Dom.el('input')
 		this.input.type = 'text'
 		this.inputArea.append(this.input)
-		this.el.append(this.messageArea, this.inputArea)
+		this.el.append(this.outerScrollArea, this.inputArea)
 		this.input.addEventListener('keydown', this.getInputKeypressCallback())
 		this.onInput = () => {}
 		parent.append(this.el)
@@ -57,26 +66,35 @@ export class Terminal {
 		}
 	}
 
+	addMessageEl(el: HTMLElement) {
+		if (this.messageArea.firstChild != null) {
+			this.messageArea.insertBefore(el, this.messageArea.firstChild)
+		} else {
+			this.messageArea.append(el)
+		}
+		ScrollerToBottom(this.outerScrollArea)
+	}
+
 	localError(s: string) {
 		const div = Dom.textEl('div', s, ['terminal-msg', 'terminal-local-error'])
-		this.messageArea.append(div)
+		this.addMessageEl(div)
 	}
 	serverError(s: string) {
 		const div = Dom.textEl('div', s, ['terminal-msg', 'terminal-server-error'])
-		this.messageArea.append(div)
+		this.addMessageEl(div)
 	}
 	serverMessage(s: string) {
 		const div = Dom.textEl('div', s, ['terminal-msg', 'terminal-server-msg'])
-		this.messageArea.append(div)
+		this.addMessageEl(div)
 	}
 	parseServerMessage(s: string) {
 		const msg = JSON.parse(s) as ServMessage
 		if (msg.Parts.length == 0) {
-			this.messageArea.append(Dom.textEl('div', '* empty message *'))
+			this.addMessageEl(Dom.textEl('div', '* empty message *'))
 		} else {
 			const div = Dom.el('div')
 			this.parseMessagePartRecurse(msg, 0, div)
-			this.messageArea.append(div)
+			this.addMessageEl(div)
 		}
 	}
 	parseMessagePartRecurse(
@@ -124,6 +142,6 @@ export class Terminal {
 	}
 	localMessage(s: string) {
 		const div = Dom.textEl('div', s, ['terminal-msg', 'terminal-local-msg'])
-		this.messageArea.append(div)
+		this.addMessageEl(div)
 	}
 }
