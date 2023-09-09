@@ -8,7 +8,6 @@ var Actors map[int64]*Actor
 
 func init() {
 	last_id = 0
-	mutex_last_id.Unlock()
 	Actors = make(map[int64]*Actor)
 }
 

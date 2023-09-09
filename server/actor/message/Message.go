@@ -2,22 +2,23 @@ package message
 
 import "encoding/json"
 
-/*
-	A message which will be sent to the actors
-*/
-type ActorMessage struct {
-	text string
+type messageHolder struct {
+	Parts   []*messagePart `json:"Parts"`
+	Current *messagePart   `json:"-"`
 }
 
-func Message(msg string) *ActorMessage {
-	m := ActorMessage{msg}
-	return &m
+func (m *messageHolder) Next() *messagePart {
+	m.Parts = append(m.Parts, m.Current)
+	m.Current = &messagePart{}
+	return m.Current
 }
 
-func (self *ActorMessage) String() []byte {
-	bytes, err := json.Marshal(self)
+func (m *messageHolder) String() []byte {
+	m.Next()
+	b, err := json.Marshal(m)
 	if err != nil {
-		bytes = []byte("Error processing server message")
+		return []byte("Error marshalling message.")
+	} else {
+		return b
 	}
-	return bytes
 }
