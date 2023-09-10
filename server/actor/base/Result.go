@@ -1,7 +1,7 @@
 package base
 
 type QuestionResult struct {
-	interragator  *Interragator
+	interragator  *Interrogator
 	questionIndex int
 	result        map[string]string
 }
@@ -27,7 +27,11 @@ func (qr *QuestionResult) Cancel(actor *Actor) {
 	qr.interragator.onCancel(actor, qr)
 }
 
-func NewQuestioner(interragator *Interragator) *QuestionResult {
+func NewQuestioner(interragator *Interrogator) *QuestionResult {
 	qr := QuestionResult{interragator, 0, make(map[string]string)}
 	return &qr
+}
+
+func (qr *QuestionResult) GetResult() map[string]string {
+	return qr.result
 }

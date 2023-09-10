@@ -1,5 +1,7 @@
 package message
 
+import "fmt"
+
 type MessageBuilder struct {
 	message messageHolder
 }
@@ -18,6 +20,12 @@ func (mb *MessageBuilder) Next() *MessageBuilder {
 
 func (mb *MessageBuilder) Text(txt string) *MessageBuilder {
 	mb.message.Current.TextValue = &txt
+	return mb
+}
+
+func (mb *MessageBuilder) Textf(format string, a ...any) *MessageBuilder {
+	s := fmt.Sprintf(format, a...)
+	mb.message.Current.TextValue = &s
 	return mb
 }
 
@@ -46,8 +54,9 @@ func (mb *MessageBuilder) Class(css_class string) *MessageBuilder {
 	return mb
 }
 
-func (mb *MessageBuilder) Classes(css_classes []string) {
+func (mb *MessageBuilder) Classes(css_classes []string) *MessageBuilder {
 	mb.message.Current.Classes(css_classes)
+	return mb
 }
 
 func (mb *MessageBuilder) Bytes() []byte {

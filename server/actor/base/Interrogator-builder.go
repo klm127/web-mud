@@ -3,7 +3,7 @@ package base
 import "fmt"
 
 type InterragatorBuilder struct {
-	inter *Interragator
+	inter *Interrogator
 }
 
 func simpleCancel(actor *Actor, qr *QuestionResult) {
@@ -19,7 +19,7 @@ func nullopOnDone(actor *Actor, qr *QuestionResult) {
 
 // Get a builder for an interragator
 func NewInter() *InterragatorBuilder {
-	inter := Interragator{}
+	inter := Interrogator{}
 	inter.onCancel = simpleCancel
 	inter.onFinished = nullopOnDone
 	inter.questions = make([]Question, 0)
@@ -40,17 +40,17 @@ func (ib *InterragatorBuilder) AddQuestion(q Question) *InterragatorBuilder {
 }
 
 // set the function that will be called when the interragatory is finished
-func (ib *InterragatorBuilder) onFinished(cb func(*Actor, *QuestionResult)) *InterragatorBuilder {
+func (ib *InterragatorBuilder) OnFinished(cb func(*Actor, *QuestionResult)) *InterragatorBuilder {
 	ib.inter.onFinished = cb
 	return ib
 }
 
 // set the function that will be called when the interragatory is canceled
-func (ib *InterragatorBuilder) onCancel(cb func(*Actor, *QuestionResult)) *InterragatorBuilder {
+func (ib *InterragatorBuilder) OnCancel(cb func(*Actor, *QuestionResult)) *InterragatorBuilder {
 	ib.inter.onCancel = cb
 	return ib
 }
 
-func (ib *InterragatorBuilder) Get() *Interragator {
+func (ib *InterragatorBuilder) Get() *Interrogator {
 	return ib.inter
 }

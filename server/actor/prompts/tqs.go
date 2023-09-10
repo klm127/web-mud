@@ -2,7 +2,7 @@ package prompts
 
 import "github.com/pwsdc/web-mud/server/actor/base"
 
-var TestQuestions *base.Interragator
+var TestQuestions *base.Interrogator
 
 func init() {
 	ib := base.NewInter().Intro("Some test questions.")

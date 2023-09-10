@@ -75,6 +75,11 @@ func (cs *CommandSet) HasCommandOrAlias(name string) bool {
 	return ok
 }
 
+func (cs *CommandSet) GetCommand(name string) *Command {
+	c := cs.commands_and_alias[name]
+	return c
+}
+
 func (cs *CommandSet) Execute(actor *Actor, name string, value string) {
 	_, ok := cs.commands_and_alias[name]
 	if ok {

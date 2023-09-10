@@ -7,6 +7,7 @@ import (
 
 	"github.com/pwsdc/web-mud/server/actor/base"
 	"github.com/pwsdc/web-mud/server/actor/message"
+	"github.com/pwsdc/web-mud/util/re"
 )
 
 func init() {
@@ -16,7 +17,7 @@ func init() {
 func createInfoSet() {
 	cs := base.NewCommandSet("info")
 	help_cmd := base.NewCommand("help", "shows information about available commands", []string{"h"}, help)
-	time_cmd := base.NewCommand("time", "shows information about time.", []string{}, timeCommand)
+	time_cmd := base.NewCommand("time", "shows information about time", []string{}, timeCommand)
 	cs.RegisterCommand(help_cmd)
 	cs.RegisterCommand(time_cmd)
 	base.RegisterDefaultCommandSet(cs)
@@ -26,24 +27,76 @@ func help(actor *base.Actor, msg string) {
 	msg = strings.TrimSpace(msg)
 	m := message.New()
 	if len(msg) == 0 {
+		m.Text("Let's get you some help. You can type 'help <command>' to get more information about it.").NewLine(1).Next()
 		m.Text("The commands you have available are:").NewLine(1)
 		// print all available commands
 		for _, cset := range actor.Commands {
 			m.Next()
+			// print the category name
+			m.Text(cset.Name + ":").Classes([]string{"bolded", "right-pad"}).Next()
 			cset_commands := cset.GetCommands()
-			m.Text(" " + cset.Name).NewLine(1)
-			s := ""
+			cat_commands := make([]string, len(cset_commands))
+			i := 0
 			for _, com := range cset_commands {
-				s += com.Name
+				s := com.Name
 				if len(com.Alias) > 0 {
-					s += fmt.Sprintf("(%s)", strings.Join(com.Alias, ","))
+					s += fmt.Sprintf(" (%s)", strings.Join(com.Alias, ","))
 				}
-				s += "   "
+				cat_commands[i] = s
+				i++
 			}
-			m.Text(s).Indent(10)
+			m.Text(strings.Join(cat_commands, ", ")).Indent(10).NewLine(1)
 		}
+	} else {
+		helpParticular(actor, msg)
 	}
 	actor.Message(m.Bytes())
+}
+
+func helpParticular(actor *base.Actor, cmd string) {
+	if re.HasPeriod.Match([]byte(cmd)) {
+		split := strings.SplitN(cmd, ".", 2)
+		if len(split) < 2 {
+			actor.Errorf("I need a command to look for.")
+		} else {
+			cset, ok := actor.Commands[split[0]]
+			if !ok {
+				actor.Errorf("I couldn't find the command group %s.", split[0])
+			} else {
+				has_cmd := cset.HasCommandOrAlias(split[1])
+				if !has_cmd {
+					actor.Errorf("Command group %s doesn't seem to have a command called %s.", split[0], split[1])
+				} else {
+					m := message.New().Textf("Here's some help for %s.", cmd).NewLine(1).Next()
+					m.Indent(10).Textf("It %s.", cset.GetCommand(split[1]).Description)
+					actor.Message(m.Bytes())
+				}
+			}
+		}
+	} else {
+		matches := make([]*base.CommandSet, 0, 1)
+		for _, v := range actor.Commands {
+			if v.HasCommandOrAlias(cmd) {
+				matches = append(matches, v)
+			}
+		}
+		if len(matches) == 1 {
+			m := message.New().Textf("Here's some help for %s.", cmd).NewLine(1).Next()
+			m.Indent(10).Textf("It %s.", matches[0].GetCommand(cmd).Description)
+			actor.Message(m.Bytes())
+		} else if len(matches) < 1 {
+			actor.Errorf("I couldn't find any commands named %s.", cmd)
+		} else {
+			cset_names := make([]string, len(matches))
+			for i, v := range matches {
+				cset_names[i] = v.Name
+			}
+			joined := strings.Join(cset_names, ", ")
+
+			actor.Errorf("There are multiple commands named %s. You'll need to qualify it with one of the following: %s. For example, try %s.%s.", cmd, joined, cset_names[0], cmd)
+		}
+	}
+
 }
 
 func timeCommand(actor *base.Actor, msg string) {

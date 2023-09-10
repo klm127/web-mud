@@ -67,3 +67,8 @@ func (sqb *SimpleQuestionBuilder) MultipleChoice(choices []string) *SimpleQuesti
 	sqb.question.validator = multiChoiceValidator(choices)
 	return sqb
 }
+
+func (sqb *SimpleQuestionBuilder) Validator(cb func(string) (bool, string)) *SimpleQuestionBuilder {
+	sqb.question.validator = cb
+	return sqb
+}
