@@ -4,8 +4,66 @@
 
 package dbg
 
-import ()
+import (
+	"database/sql/driver"
+	"fmt"
+	"time"
+)
+
+type Userlevel string
+
+const (
+	UserlevelPlayer       Userlevel = "player"
+	UserlevelTrialBuilder Userlevel = "trial-builder"
+	UserlevelBuilder      Userlevel = "builder"
+	UserlevelModerator    Userlevel = "moderator"
+	UserlevelAdmin        Userlevel = "admin"
+)
+
+func (e *Userlevel) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = Userlevel(s)
+	case string:
+		*e = Userlevel(s)
+	default:
+		return fmt.Errorf("unsupported scan type for Userlevel: %T", src)
+	}
+	return nil
+}
+
+type NullUserlevel struct {
+	Userlevel Userlevel
+	Valid     bool // Valid is true if Userlevel is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullUserlevel) Scan(value interface{}) error {
+	if value == nil {
+		ns.Userlevel, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.Userlevel.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullUserlevel) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.Userlevel), nil
+}
 
 type Room struct {
 	ID int64
+}
+
+type User struct {
+	ID        int64
+	Name      string
+	Password  string
+	Created   time.Time
+	LastLogin time.Time
+	Level     Userlevel
 }

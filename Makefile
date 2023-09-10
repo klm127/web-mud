@@ -22,7 +22,7 @@ db_pw=bwgpw
  # database image
 db_img=postgres:15.4-bullseye
  # database container
-db_container=sdcmud_container
+db_container=sdcmuddb
  # port to be exposed on db
 db_port=5432
 # port to be exposed for http server
@@ -100,9 +100,21 @@ db.conn:
 db.dc:
 	docker network disconnect $(docker_net_name) $(db_container)
 
+db.bash:
+	docker exec -it $(db_container) /bin/sh
+
+db.dump:
+	docker exec -it $(db_container) mkdir -p /tmp/backup
+	docker exec -it $(db_container) \
+	pg_dump --file "/tmp/backup/full.sql" --format=p --section=pre-data --section=data --section=post-data --inserts --on-conflict-do-nothing --create --clean --if-exists --verbose \
+	-U $(db_user) -d $(db) -n public
+	docker cp $(db_container):/tmp/backup/full.sql $(CURDIR)/.docker/postgres/bup.sql
+
 # ------------------------------------------------------------
 # 		pgAdmin Helper Image and Container Build Commands
 # ------------------------------------------------------------
+
+db.admin: db.admin.run db.admin.conn
 
  # run pgAdmin container
 db.admin.run:
@@ -120,7 +132,7 @@ db.admin.rm:
 	docker rm $(pgadmin_container) --force
 
  # rebuild phpmyadmin
-db.admin.rb: db.admin.rm db.admin.run
+db.admin.rb: db.admin.rm db.admin.run db.admin.conn
 
  # connect to the docker network
 db.admin.conn:

@@ -24,17 +24,41 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
+	}
 	if q.getRoomsStmt, err = db.PrepareContext(ctx, getRooms); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRooms: %w", err)
+	}
+	if q.getUserByIdStmt, err = db.PrepareContext(ctx, getUserById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserById: %w", err)
+	}
+	if q.getUserByNameStmt, err = db.PrepareContext(ctx, getUserByName); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserByName: %w", err)
 	}
 	return &q, nil
 }
 
 func (q *Queries) Close() error {
 	var err error
+	if q.createUserStmt != nil {
+		if cerr := q.createUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
+		}
+	}
 	if q.getRoomsStmt != nil {
 		if cerr := q.getRoomsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getRoomsStmt: %w", cerr)
+		}
+	}
+	if q.getUserByIdStmt != nil {
+		if cerr := q.getUserByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserByIdStmt: %w", cerr)
+		}
+	}
+	if q.getUserByNameStmt != nil {
+		if cerr := q.getUserByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserByNameStmt: %w", cerr)
 		}
 	}
 	return err
@@ -74,15 +98,21 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db           DBTX
-	tx           *sql.Tx
-	getRoomsStmt *sql.Stmt
+	db                DBTX
+	tx                *sql.Tx
+	createUserStmt    *sql.Stmt
+	getRoomsStmt      *sql.Stmt
+	getUserByIdStmt   *sql.Stmt
+	getUserByNameStmt *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:           tx,
-		tx:           tx,
-		getRoomsStmt: q.getRoomsStmt,
+		db:                tx,
+		tx:                tx,
+		createUserStmt:    q.createUserStmt,
+		getRoomsStmt:      q.getRoomsStmt,
+		getUserByIdStmt:   q.getUserByIdStmt,
+		getUserByNameStmt: q.getUserByNameStmt,
 	}
 }
