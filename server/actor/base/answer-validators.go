@@ -107,3 +107,14 @@ func multiChoiceValidator(choices []string) func(string) (bool, string) {
 		return false, not_in_answer
 	}
 }
+
+func strlenValidator(length int) func(string) (bool, string) {
+	bad := fmt.Sprintf("You must enter at least %d characters.", length)
+	return func(txt string) (bool, string) {
+		if len(txt) < length {
+			return false, bad
+		} else {
+			return true, ""
+		}
+	}
+}

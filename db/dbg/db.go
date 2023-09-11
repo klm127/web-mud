@@ -27,8 +27,17 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
 	}
+	if q.getRoomStmt, err = db.PrepareContext(ctx, getRoom); err != nil {
+		return nil, fmt.Errorf("error preparing query GetRoom: %w", err)
+	}
 	if q.getRoomsStmt, err = db.PrepareContext(ctx, getRooms); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRooms: %w", err)
+	}
+	if q.getUserBeingNamesStmt, err = db.PrepareContext(ctx, getUserBeingNames); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserBeingNames: %w", err)
+	}
+	if q.getUserBeingsStmt, err = db.PrepareContext(ctx, getUserBeings); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserBeings: %w", err)
 	}
 	if q.getUserByIdStmt, err = db.PrepareContext(ctx, getUserById); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUserById: %w", err)
@@ -46,9 +55,24 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
 		}
 	}
+	if q.getRoomStmt != nil {
+		if cerr := q.getRoomStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getRoomStmt: %w", cerr)
+		}
+	}
 	if q.getRoomsStmt != nil {
 		if cerr := q.getRoomsStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getRoomsStmt: %w", cerr)
+		}
+	}
+	if q.getUserBeingNamesStmt != nil {
+		if cerr := q.getUserBeingNamesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserBeingNamesStmt: %w", cerr)
+		}
+	}
+	if q.getUserBeingsStmt != nil {
+		if cerr := q.getUserBeingsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserBeingsStmt: %w", cerr)
 		}
 	}
 	if q.getUserByIdStmt != nil {
@@ -98,21 +122,27 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                DBTX
-	tx                *sql.Tx
-	createUserStmt    *sql.Stmt
-	getRoomsStmt      *sql.Stmt
-	getUserByIdStmt   *sql.Stmt
-	getUserByNameStmt *sql.Stmt
+	db                    DBTX
+	tx                    *sql.Tx
+	createUserStmt        *sql.Stmt
+	getRoomStmt           *sql.Stmt
+	getRoomsStmt          *sql.Stmt
+	getUserBeingNamesStmt *sql.Stmt
+	getUserBeingsStmt     *sql.Stmt
+	getUserByIdStmt       *sql.Stmt
+	getUserByNameStmt     *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                tx,
-		tx:                tx,
-		createUserStmt:    q.createUserStmt,
-		getRoomsStmt:      q.getRoomsStmt,
-		getUserByIdStmt:   q.getUserByIdStmt,
-		getUserByNameStmt: q.getUserByNameStmt,
+		db:                    tx,
+		tx:                    tx,
+		createUserStmt:        q.createUserStmt,
+		getRoomStmt:           q.getRoomStmt,
+		getRoomsStmt:          q.getRoomsStmt,
+		getUserBeingNamesStmt: q.getUserBeingNamesStmt,
+		getUserBeingsStmt:     q.getUserBeingsStmt,
+		getUserByIdStmt:       q.getUserByIdStmt,
+		getUserByNameStmt:     q.getUserByNameStmt,
 	}
 }

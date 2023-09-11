@@ -1,5 +1,7 @@
 package shared
 
+import "fmt"
+
 type HasLogs struct {
 	logs []log
 }
@@ -16,6 +18,10 @@ func (self *HasLogs) hasLogsInit() {
 
 func (self *HasLogs) Log(txt string) {
 	self.logs = append(self.logs, newlog(txt))
+}
+
+func (logr *HasLogs) Logf(format string, a ...any) {
+	logr.logs = append(logr.logs, newlog(fmt.Sprintf(format, a...)))
 }
 
 func (self *HasLogs) GetLogs() *[]string {

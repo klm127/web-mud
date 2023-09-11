@@ -1,5 +1,7 @@
 package base
 
+import "fmt"
+
 type SimpleQuestionBuilder struct {
 	question *sQuestion
 }
@@ -23,6 +25,11 @@ func (sqb *SimpleQuestionBuilder) Key(val string) *SimpleQuestionBuilder {
 // Set the question text.
 func (sqb *SimpleQuestionBuilder) Text(val string) *SimpleQuestionBuilder {
 	sqb.question.questionText = val
+	return sqb
+}
+
+func (sqb *SimpleQuestionBuilder) Textf(format string, a ...any) *SimpleQuestionBuilder {
+	sqb.question.questionText = fmt.Sprintf(format, a...)
 	return sqb
 }
 
@@ -70,5 +77,10 @@ func (sqb *SimpleQuestionBuilder) MultipleChoice(choices []string) *SimpleQuesti
 
 func (sqb *SimpleQuestionBuilder) Validator(cb func(string) (bool, string)) *SimpleQuestionBuilder {
 	sqb.question.validator = cb
+	return sqb
+}
+
+func (sqb *SimpleQuestionBuilder) StringLength(minLength int) *SimpleQuestionBuilder {
+	sqb.question.validator = strlenValidator(minLength)
 	return sqb
 }

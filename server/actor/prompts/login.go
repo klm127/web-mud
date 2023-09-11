@@ -18,7 +18,6 @@ func init() {
 	ilogin.AddQuestion(qpasswordlogin.Get())
 	ilogin.OnFinished(onLoginSubmit)
 	LoginQuestions = ilogin.Get()
-
 }
 
 func onLoginSubmit(actor *base.Actor, qr *base.QuestionResult) {

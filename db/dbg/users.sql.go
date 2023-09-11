@@ -7,6 +7,7 @@ package dbg
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -31,6 +32,66 @@ func (q *Queries) CreateUser(ctx context.Context, arg *CreateUserParams) (MudUse
 		&i.Level,
 	)
 	return i, err
+}
+
+const getUserBeingNames = `-- name: GetUserBeingNames :many
+select name from mud.beings where owner = $1
+`
+
+func (q *Queries) GetUserBeingNames(ctx context.Context, owner sql.NullInt64) ([]string, error) {
+	rows, err := q.query(ctx, q.getUserBeingNamesStmt, getUserBeingNames, owner)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var name string
+		if err := rows.Scan(&name); err != nil {
+			return nil, err
+		}
+		items = append(items, name)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUserBeings = `-- name: GetUserBeings :many
+select id, name, description, room, owner from mud.beings where owner = $1
+`
+
+func (q *Queries) GetUserBeings(ctx context.Context, owner sql.NullInt64) ([]MudBeing, error) {
+	rows, err := q.query(ctx, q.getUserBeingsStmt, getUserBeings, owner)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []MudBeing
+	for rows.Next() {
+		var i MudBeing
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Room,
+			&i.Owner,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUserById = `-- name: GetUserById :one

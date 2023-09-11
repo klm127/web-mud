@@ -7,25 +7,70 @@ package dbg
 
 import (
 	"context"
+
+	"github.com/lib/pq"
 )
 
-const getRooms = `-- name: GetRooms :many
-select id from mud.rooms as rooms
+const getRoom = `-- name: GetRoom :one
+select id, name, description, img, objects, n, s, e, w, ne, se, sw, nw, u, d from mud.rooms where id = $1
 `
 
-func (q *Queries) GetRooms(ctx context.Context) ([]int64, error) {
+func (q *Queries) GetRoom(ctx context.Context, id int64) (MudRoom, error) {
+	row := q.queryRow(ctx, q.getRoomStmt, getRoom, id)
+	var i MudRoom
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Img,
+		pq.Array(&i.Objects),
+		&i.N,
+		&i.S,
+		&i.E,
+		&i.W,
+		&i.Ne,
+		&i.Se,
+		&i.Sw,
+		&i.Nw,
+		&i.U,
+		&i.D,
+	)
+	return i, err
+}
+
+const getRooms = `-- name: GetRooms :many
+select id, name, description, img, objects, n, s, e, w, ne, se, sw, nw, u, d from mud.rooms as rooms
+`
+
+func (q *Queries) GetRooms(ctx context.Context) ([]MudRoom, error) {
 	rows, err := q.query(ctx, q.getRoomsStmt, getRooms)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []int64
+	var items []MudRoom
 	for rows.Next() {
-		var id int64
-		if err := rows.Scan(&id); err != nil {
+		var i MudRoom
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Img,
+			pq.Array(&i.Objects),
+			&i.N,
+			&i.S,
+			&i.E,
+			&i.W,
+			&i.Ne,
+			&i.Se,
+			&i.Sw,
+			&i.Nw,
+			&i.U,
+			&i.D,
+		); err != nil {
 			return nil, err
 		}
-		items = append(items, id)
+		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

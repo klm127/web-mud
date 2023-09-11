@@ -11,6 +11,7 @@ type argConfig struct {
 	Db     dbConfig
 	Http   httpConfig
 	Socket socketConfig
+	World  worldConfig
 }
 
 // Global configuration - set from flags or env on program start
@@ -23,6 +24,7 @@ func Parse() {
 	Config.Db.setFlags()
 	Config.Http.setFlags()
 	Config.Socket.setFlags()
+	Config.World.setFlags()
 	flag.Parse()
 
 	env_path := flag.Arg(0)
@@ -35,6 +37,7 @@ func Parse() {
 		Config.Db.parseEnv()
 		Config.Http.parseEnv()
 		Config.Socket.parseEnv()
+		Config.World.parseEnv()
 	}
 }
 

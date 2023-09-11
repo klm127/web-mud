@@ -5,6 +5,7 @@
 package dbg
 
 import (
+	"database/sql"
 	"database/sql/driver"
 	"fmt"
 	"time"
@@ -55,8 +56,30 @@ func (ns NullMudUserlevel) Value() (driver.Value, error) {
 	return ns.MudUserlevel, nil
 }
 
+type MudBeing struct {
+	ID          int64
+	Name        string
+	Description string
+	Room        int64
+	Owner       sql.NullInt64
+}
+
 type MudRoom struct {
-	ID int64
+	ID          int64
+	Name        string
+	Description string
+	Img         sql.NullString
+	Objects     []int64
+	N           sql.NullInt64
+	S           sql.NullInt64
+	E           sql.NullInt64
+	W           sql.NullInt64
+	Ne          sql.NullInt64
+	Se          sql.NullInt64
+	Sw          sql.NullInt64
+	Nw          sql.NullInt64
+	U           sql.NullInt64
+	D           sql.NullInt64
 }
 
 type MudUser struct {
