@@ -10,7 +10,7 @@ type Interrogator struct {
 }
 
 func (i *Interrogator) StartInterragator(actor shared.IActor) {
-	actor.StartQuestioning(i)
+	//actor.StartQuestioning(i)
 }
 
 func (i *Interrogator) Answer(actor shared.IActor, index int, msg string, qr shared.IQuestionResult) {
