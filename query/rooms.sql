@@ -1,3 +1,3 @@
 
 -- name: GetRooms :many
-select * from rooms;
+select * from mud.rooms as rooms;

@@ -54,7 +54,7 @@ func onRegisterSubmit(actor *base.Actor, qr *base.QuestionResult) {
 	cuserparams := dbg.CreateUserParams{}
 	cuserparams.Name = uname
 	cuserparams.Password = pw
-	cuserparams.Level = dbg.UserlevelPlayer
+	cuserparams.Level = dbg.MudUserlevelPlayer
 	dbuser, err := db.Store.Query.CreateUser(context.Background(), &cuserparams)
 	if err != nil {
 		actor.ErrorMessage("For some reason I couldn't remember you.")

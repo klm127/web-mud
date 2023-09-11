@@ -103,9 +103,9 @@ db.dc:
 db.dump:
 	docker exec -it $(db_container) mkdir -p /tmp/backup
 	docker exec -it $(db_container) \
-	pg_dump --file "/tmp/backup/full.sql" --format=p --section=pre-data --section=data --section=post-data --inserts --on-conflict-do-nothing --create --clean --if-exists --verbose \
+	pg_dump --file "/tmp/backup/full.sql" --format=p --section=pre-data --section=data --section=post-data --exclude-schema public --schema mud --inserts --on-conflict-do-nothing --create --clean --if-exists --verbose \
 	-U $(db_user) -d $(db) -n public
-	docker cp $(db_container):/tmp/backup/full.sql $(CURDIR)/.docker/postgres/bup.sql
+	docker cp $(db_container):/tmp/backup/full.sql "$(CURDIR)/.docker/postgres/bup.sql"
 
 # ------------------------------------------------------------
 # 		pgAdmin Helper Image and Container Build Commands

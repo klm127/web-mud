@@ -22,7 +22,7 @@ type Actor struct {
 	time_opened     time.Time
 	time_lastTalked time.Time
 	questioning     *QuestionResult
-	user            *dbg.User
+	user            *dbg.MudUser
 }
 
 func (actor *Actor) Disconnect() {
@@ -187,11 +187,11 @@ func (actor *Actor) StartQuestioning(inter *Interrogator) {
 	inter.StartInterragator(actor)
 }
 
-func (actor *Actor) LoadUser(user *dbg.User) {
+func (actor *Actor) LoadUser(user *dbg.MudUser) {
 	actor.user = user
 }
 
-func (actor *Actor) GetUser() *dbg.User {
+func (actor *Actor) GetUser() *dbg.MudUser {
 	return actor.user
 }
 
