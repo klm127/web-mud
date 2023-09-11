@@ -47,11 +47,6 @@ SET row_security = off;
 -- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
 --
 
-CREATE SCHEMA public;
-
-
-ALTER SCHEMA public OWNER TO pg_database_owner;
-
 --
 -- TOC entry 3339 (class 0 OID 0)
 -- Dependencies: 4

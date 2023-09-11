@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/pwsdc/web-mud/server/actor/commands"
 	"github.com/pwsdc/web-mud/server/socket"
+	_ "github.com/pwsdc/web-mud/server/user"
 )
 
 func CreateServer() *gin.Engine {

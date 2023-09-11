@@ -13,6 +13,9 @@ import (
 
 var RegisterQuestions *base.Interrogator
 
+var LoggedOutCommands *base.CommandSet
+var LoggedInCommands *base.CommandSet
+
 var unameRe regexp.Regexp
 
 func init() {
@@ -42,21 +45,24 @@ func onRegisterSubmit(actor *base.Actor, qr *base.QuestionResult) {
 		return
 	}
 	_, err := db.Store.Query.GetUserByName(context.Background(), uname)
-	if err != nil {
+	if err == nil {
 		actor.ErrorMessage(fmt.Sprintf("I already know someone named %s. Do you have something else you go by?", uname))
 		actor.StartQuestioning(RegisterQuestions)
 		return
 	}
+
 	cuserparams := dbg.CreateUserParams{}
 	cuserparams.Name = uname
 	cuserparams.Password = pw
 	cuserparams.Level = dbg.UserlevelPlayer
-	err = db.Store.Query.CreateUser(context.Background(), &cuserparams)
+	dbuser, err := db.Store.Query.CreateUser(context.Background(), &cuserparams)
 	if err != nil {
 		actor.ErrorMessage("For some reason I couldn't remember you.")
 		actor.StartQuestioning(RegisterQuestions)
 		return
 	}
+	actor.LoadUser(&dbuser)
+	actor.SetCommandGroup("user", LoggedInCommands)
 	actor.MessageSimple(fmt.Sprintf("It's a pleasure to meet you, %s!", uname))
 	actor.EndQuestioning()
 }

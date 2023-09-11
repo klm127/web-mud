@@ -8,7 +8,7 @@ type InterragatorBuilder struct {
 
 func simpleCancel(actor *Actor, qr *QuestionResult) {
 	actor.questioning = nil
-	actor.MessageSimple("Canceled line of questioning.")
+	actor.MessageSimple("I'm done with this line of questioning.")
 }
 
 func nullopOnDone(actor *Actor, qr *QuestionResult) {

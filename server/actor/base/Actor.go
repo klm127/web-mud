@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/pwsdc/web-mud/db/dbg"
 	"github.com/pwsdc/web-mud/server/actor/message"
 	"github.com/pwsdc/web-mud/util/re"
 )
@@ -21,6 +22,7 @@ type Actor struct {
 	time_opened     time.Time
 	time_lastTalked time.Time
 	questioning     *QuestionResult
+	user            *dbg.User
 }
 
 func (actor *Actor) Disconnect() {
@@ -39,7 +41,7 @@ Finally it starts the actor.listenSocket() go routine, where input will be proce
 */
 func CreateActor(conn *websocket.Conn) {
 	id := nextId()
-	actor := Actor{id, conn, map[string]*CommandSet{}, false, time.Now(), time.Now(), nil}
+	actor := Actor{id, conn, map[string]*CommandSet{}, false, time.Now(), time.Now(), nil, nil}
 	fmt.Println("Creating actor")
 	for s, v := range defaultCommandSets {
 		fmt.Println("Adding", s, "to default actor commands.")
@@ -183,4 +185,20 @@ func (actor *Actor) EndQuestioning() {
 
 func (actor *Actor) StartQuestioning(inter *Interrogator) {
 	inter.StartInterragator(actor)
+}
+
+func (actor *Actor) LoadUser(user *dbg.User) {
+	actor.user = user
+}
+
+func (actor *Actor) GetUser() *dbg.User {
+	return actor.user
+}
+
+func (actor *Actor) RemoveUser() {
+	actor.user = nil
+}
+
+func (actor *Actor) SetCommandGroup(name string, cs *CommandSet) {
+	actor.Commands[name] = cs
 }

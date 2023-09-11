@@ -100,9 +100,6 @@ db.conn:
 db.dc:
 	docker network disconnect $(docker_net_name) $(db_container)
 
-db.bash:
-	docker exec -it $(db_container) /bin/sh
-
 db.dump:
 	docker exec -it $(db_container) mkdir -p /tmp/backup
 	docker exec -it $(db_container) \
