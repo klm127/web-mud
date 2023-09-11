@@ -124,7 +124,7 @@ func timeCommand(actor *base.Actor, msg string) {
 	if send_time_opened {
 		s := fmt.Sprintf("You connected at %s.", actor.GetTimeOpened().Format("2006-01-02 15:04:05.000"))
 		response.Text(s).NewLine(1).Indent(10).Next()
-		ot := time.Now().Sub(actor.GetTimeOpened())
+		ot := time.Since(actor.GetTimeOpened())
 		s2 := fmt.Sprintf("The connection has been open for %.2f minutes.", ot.Minutes())
 		response.Text(s2).NewLine(1).Indent(10).Next()
 	}

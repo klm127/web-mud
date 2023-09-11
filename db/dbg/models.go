@@ -89,4 +89,5 @@ type MudUser struct {
 	Created   time.Time
 	LastLogin time.Time
 	Level     MudUserlevel
+	Being     int64
 }

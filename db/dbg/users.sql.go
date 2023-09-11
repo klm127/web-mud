@@ -11,17 +11,23 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-insert into mud.users as users (name, password, level) values ($1, $2, $3) returning id, name, password, created, last_login, level
+insert into mud.users as users (name, password, level, being) values ($1, $2, $3, $4) returning id, name, password, created, last_login, level, being
 `
 
 type CreateUserParams struct {
 	Name     string
 	Password string
 	Level    MudUserlevel
+	Being    int64
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg *CreateUserParams) (MudUser, error) {
-	row := q.queryRow(ctx, q.createUserStmt, createUser, arg.Name, arg.Password, arg.Level)
+	row := q.queryRow(ctx, q.createUserStmt, createUser,
+		arg.Name,
+		arg.Password,
+		arg.Level,
+		arg.Being,
+	)
 	var i MudUser
 	err := row.Scan(
 		&i.ID,
@@ -30,6 +36,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg *CreateUserParams) (MudUse
 		&i.Created,
 		&i.LastLogin,
 		&i.Level,
+		&i.Being,
 	)
 	return i, err
 }
@@ -95,7 +102,7 @@ func (q *Queries) GetUserBeings(ctx context.Context, owner sql.NullInt64) ([]Mud
 }
 
 const getUserById = `-- name: GetUserById :one
-select id, name, password, created, last_login, level from mud.users as users where id = $1
+select id, name, password, created, last_login, level, being from mud.users as users where id = $1
 `
 
 func (q *Queries) GetUserById(ctx context.Context, id int64) (MudUser, error) {
@@ -108,12 +115,13 @@ func (q *Queries) GetUserById(ctx context.Context, id int64) (MudUser, error) {
 		&i.Created,
 		&i.LastLogin,
 		&i.Level,
+		&i.Being,
 	)
 	return i, err
 }
 
 const getUserByName = `-- name: GetUserByName :one
-select id, name, password, created, last_login, level from mud.users as users where name = $1
+select id, name, password, created, last_login, level, being from mud.users as users where name = $1
 `
 
 func (q *Queries) GetUserByName(ctx context.Context, name string) (MudUser, error) {
@@ -126,6 +134,7 @@ func (q *Queries) GetUserByName(ctx context.Context, name string) (MudUser, erro
 		&i.Created,
 		&i.LastLogin,
 		&i.Level,
+		&i.Being,
 	)
 	return i, err
 }

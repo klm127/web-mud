@@ -9,6 +9,7 @@ import (
 	"github.com/pwsdc/web-mud/db/dbg"
 	"github.com/pwsdc/web-mud/server/actor/message"
 	"github.com/pwsdc/web-mud/util/re"
+	"github.com/pwsdc/web-mud/world"
 )
 
 /*
@@ -23,12 +24,16 @@ type Actor struct {
 	time_lastTalked time.Time
 	questioning     *QuestionResult
 	user            *dbg.MudUser
+	being           *world.Being
 }
 
 func (actor *Actor) Disconnect() {
 	actor.conn.WriteMessage(1, message.New().Text("Goodbye").Bytes())
 	actor.close_requested = true
 	removeActor(actor.id)
+	if actor.user != nil {
+		world.OffloadBeing(actor.user.Being)
+	}
 	actor.conn.Close()
 }
 
@@ -41,7 +46,7 @@ Finally it starts the actor.listenSocket() go routine, where input will be proce
 */
 func CreateActor(conn *websocket.Conn) {
 	id := nextId()
-	actor := Actor{id, conn, map[string]*CommandSet{}, false, time.Now(), time.Now(), nil, nil}
+	actor := Actor{id, conn, map[string]*CommandSet{}, false, time.Now(), time.Now(), nil, nil, nil}
 	fmt.Println("Creating actor")
 	for s, v := range defaultCommandSets {
 		fmt.Println("Adding", s, "to default actor commands.")
@@ -176,7 +181,7 @@ func (actor *Actor) GetTimeOpened() time.Time {
 }
 
 func (actor *Actor) GetTimeSinceLastTalked() time.Duration {
-	return time.Now().Sub(actor.time_lastTalked)
+	return time.Since(actor.time_lastTalked)
 }
 
 func (actor *Actor) EndQuestioning() {
@@ -189,6 +194,7 @@ func (actor *Actor) StartQuestioning(inter *Interrogator) {
 
 func (actor *Actor) LoadUser(user *dbg.MudUser) {
 	actor.user = user
+	actor.being = world.GetBeing(user.Being)
 }
 
 func (actor *Actor) GetUser() *dbg.MudUser {

@@ -12,21 +12,21 @@ type iHasLogs interface {
 	GetLogs() *[]string
 }
 
-func (self *HasLogs) hasLogsInit() {
-	self.logs = make([]log, 0, 10)
+func (hl *HasLogs) hasLogsInit() {
+	hl.logs = make([]log, 0, 10)
 }
 
-func (self *HasLogs) Log(txt string) {
-	self.logs = append(self.logs, newlog(txt))
+func (hl *HasLogs) Log(txt string) {
+	hl.logs = append(hl.logs, newlog(txt))
 }
 
 func (logr *HasLogs) Logf(format string, a ...any) {
 	logr.logs = append(logr.logs, newlog(fmt.Sprintf(format, a...)))
 }
 
-func (self *HasLogs) GetLogs() *[]string {
-	lgs := make([]string, 0, len(self.logs))
-	for _, l := range self.logs {
+func (hl *HasLogs) GetLogs() *[]string {
+	lgs := make([]string, 0, len(hl.logs))
+	for _, l := range hl.logs {
 		lgs = append(lgs, l.String())
 	}
 	return &lgs

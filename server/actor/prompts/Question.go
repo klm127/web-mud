@@ -1,16 +1,11 @@
-package base
+package prompts
 
 import (
 	"strings"
 
 	"github.com/pwsdc/web-mud/server/actor/message"
+	"github.com/pwsdc/web-mud/shared"
 )
-
-type Question interface {
-	GetKey() string
-	Ask(*Actor)
-	Answer(*Actor, string, *QuestionResult)
-}
 
 type sQuestion struct {
 	qkey         string
@@ -18,7 +13,7 @@ type sQuestion struct {
 	validator    func(string) (bool, string)
 }
 
-func (sq *sQuestion) Ask(actor *Actor) {
+func (sq *sQuestion) Ask(actor shared.IActor) {
 	actor.MessageSimple(sq.questionText)
 }
 
@@ -26,7 +21,7 @@ func (sq *sQuestion) GetKey() string {
 	return sq.qkey
 }
 
-func (sq *sQuestion) Answer(actor *Actor, msg string, qr *QuestionResult) {
+func (sq *sQuestion) Answer(actor shared.IActor, msg string, qr shared.IQuestionResult) {
 	canceled := sq.checkCancel(msg)
 	if canceled {
 		qr.Cancel(actor)

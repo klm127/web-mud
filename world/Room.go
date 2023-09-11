@@ -8,7 +8,7 @@ import (
 	"github.com/pwsdc/web-mud/db/dbg"
 )
 
-var LoadedRooms map[int64]*Room
+var loadedRooms map[int64]*Room
 
 type Room struct {
 	data *dbg.MudRoom
@@ -18,11 +18,11 @@ type Room struct {
 }
 
 func init() {
-	LoadedRooms = make(map[int64]*Room)
+	loadedRooms = make(map[int64]*Room)
 }
 
 func GetRoom(id int64) *Room {
-	room, ok := LoadedRooms[id]
+	room, ok := loadedRooms[id]
 	if ok {
 		return room
 	}
@@ -31,7 +31,7 @@ func GetRoom(id int64) *Room {
 		return nil
 	}
 	new_room := Room{&room_data, false, time.Now()}
-	LoadedRooms[id] = &new_room
+	loadedRooms[id] = &new_room
 	return &new_room
 }
 

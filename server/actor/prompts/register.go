@@ -6,9 +6,11 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/pwsdc/web-mud/arg"
 	"github.com/pwsdc/web-mud/db"
 	"github.com/pwsdc/web-mud/db/dbg"
 	"github.com/pwsdc/web-mud/server/actor/base"
+	"github.com/pwsdc/web-mud/world"
 )
 
 var RegisterQuestions *base.Interrogator
@@ -44,20 +46,28 @@ func onRegisterSubmit(actor *base.Actor, qr *base.QuestionResult) {
 		actor.StartQuestioning(RegisterQuestions)
 		return
 	}
-	_, err := db.Store.Query.GetUserByName(context.Background(), uname)
-	if err == nil {
+	unique := db.Store.UniqueName(uname)
+	if !unique {
 		actor.ErrorMessage(fmt.Sprintf("I already know someone named %s. Do you have something else you go by?", uname))
 		actor.StartQuestioning(RegisterQuestions)
 		return
 	}
 
-	cuserparams := dbg.CreateUserParams{}
-	cuserparams.Name = uname
-	cuserparams.Password = pw
-	cuserparams.Level = dbg.MudUserlevelPlayer
+	being := world.NewBeing(uname, "", arg.Config.World.StartRoom(), nil)
+	if being == nil {
+		actor.ErrorMessage("I couldn't find a body for you to inhabit, sorry!")
+		return
+	}
+	cuserparams := dbg.CreateUserParams{
+		Name:     uname,
+		Password: pw,
+		Level:    dbg.MudUserlevelPlayer,
+		Being:    *being,
+	}
 	dbuser, err := db.Store.Query.CreateUser(context.Background(), &cuserparams)
 	if err != nil {
 		actor.ErrorMessage("For some reason I couldn't remember you.")
+		world.DeleteBeing(*being)
 		actor.StartQuestioning(RegisterQuestions)
 		return
 	}

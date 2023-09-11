@@ -24,8 +24,20 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.createBeingStmt, err = db.PrepareContext(ctx, createBeing); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateBeing: %w", err)
+	}
 	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
+	}
+	if q.deleteBeingStmt, err = db.PrepareContext(ctx, deleteBeing); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteBeing: %w", err)
+	}
+	if q.getBeingByIdStmt, err = db.PrepareContext(ctx, getBeingById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetBeingById: %w", err)
+	}
+	if q.getBeingByNameStmt, err = db.PrepareContext(ctx, getBeingByName); err != nil {
+		return nil, fmt.Errorf("error preparing query GetBeingByName: %w", err)
 	}
 	if q.getRoomStmt, err = db.PrepareContext(ctx, getRoom); err != nil {
 		return nil, fmt.Errorf("error preparing query GetRoom: %w", err)
@@ -45,14 +57,40 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getUserByNameStmt, err = db.PrepareContext(ctx, getUserByName); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUserByName: %w", err)
 	}
+	if q.updateBeingStmt, err = db.PrepareContext(ctx, updateBeing); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateBeing: %w", err)
+	}
+	if q.updateBeingOwnerStmt, err = db.PrepareContext(ctx, updateBeingOwner); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateBeingOwner: %w", err)
+	}
 	return &q, nil
 }
 
 func (q *Queries) Close() error {
 	var err error
+	if q.createBeingStmt != nil {
+		if cerr := q.createBeingStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createBeingStmt: %w", cerr)
+		}
+	}
 	if q.createUserStmt != nil {
 		if cerr := q.createUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
+		}
+	}
+	if q.deleteBeingStmt != nil {
+		if cerr := q.deleteBeingStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteBeingStmt: %w", cerr)
+		}
+	}
+	if q.getBeingByIdStmt != nil {
+		if cerr := q.getBeingByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getBeingByIdStmt: %w", cerr)
+		}
+	}
+	if q.getBeingByNameStmt != nil {
+		if cerr := q.getBeingByNameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getBeingByNameStmt: %w", cerr)
 		}
 	}
 	if q.getRoomStmt != nil {
@@ -83,6 +121,16 @@ func (q *Queries) Close() error {
 	if q.getUserByNameStmt != nil {
 		if cerr := q.getUserByNameStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getUserByNameStmt: %w", cerr)
+		}
+	}
+	if q.updateBeingStmt != nil {
+		if cerr := q.updateBeingStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateBeingStmt: %w", cerr)
+		}
+	}
+	if q.updateBeingOwnerStmt != nil {
+		if cerr := q.updateBeingOwnerStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateBeingOwnerStmt: %w", cerr)
 		}
 	}
 	return err
@@ -124,25 +172,37 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 type Queries struct {
 	db                    DBTX
 	tx                    *sql.Tx
+	createBeingStmt       *sql.Stmt
 	createUserStmt        *sql.Stmt
+	deleteBeingStmt       *sql.Stmt
+	getBeingByIdStmt      *sql.Stmt
+	getBeingByNameStmt    *sql.Stmt
 	getRoomStmt           *sql.Stmt
 	getRoomsStmt          *sql.Stmt
 	getUserBeingNamesStmt *sql.Stmt
 	getUserBeingsStmt     *sql.Stmt
 	getUserByIdStmt       *sql.Stmt
 	getUserByNameStmt     *sql.Stmt
+	updateBeingStmt       *sql.Stmt
+	updateBeingOwnerStmt  *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
 		db:                    tx,
 		tx:                    tx,
+		createBeingStmt:       q.createBeingStmt,
 		createUserStmt:        q.createUserStmt,
+		deleteBeingStmt:       q.deleteBeingStmt,
+		getBeingByIdStmt:      q.getBeingByIdStmt,
+		getBeingByNameStmt:    q.getBeingByNameStmt,
 		getRoomStmt:           q.getRoomStmt,
 		getRoomsStmt:          q.getRoomsStmt,
 		getUserBeingNamesStmt: q.getUserBeingNamesStmt,
 		getUserBeingsStmt:     q.getUserBeingsStmt,
 		getUserByIdStmt:       q.getUserByIdStmt,
 		getUserByNameStmt:     q.getUserByNameStmt,
+		updateBeingStmt:       q.updateBeingStmt,
+		updateBeingOwnerStmt:  q.updateBeingOwnerStmt,
 	}
 }

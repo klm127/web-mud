@@ -16,18 +16,18 @@ func newlog(txt string) log {
 	return alog
 }
 
-func (self *log) write(txt string) {
-	self.time = time.Now()
-	self.txt = txt
+func (l *log) write(txt string) {
+	l.time = time.Now()
+	l.txt = txt
 }
 
-func (self *log) String() string {
-	return fmt.Sprintf("%d:%d:%d %s", self.time.Hour(), self.time.Minute(), self.time.Second(), self.txt)
+func (l *log) String() string {
+	return fmt.Sprintf("%d:%d:%d %s", l.time.Hour(), l.time.Minute(), l.time.Second(), l.txt)
 }
 
-func (self *log) Time() time.Time {
-	return self.time
+func (l *log) Time() time.Time {
+	return l.time
 }
-func (self *log) TextOnly() string {
-	return self.txt
+func (l *log) TextOnly() string {
+	return l.txt
 }
