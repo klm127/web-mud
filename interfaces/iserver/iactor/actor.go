@@ -45,7 +45,7 @@ type IActor interface {
 	SetCommandGroup(cs ICommandGroup)
 
 	// Removes a command set
-	RemoveCommandSet(key string)
+	RemoveCommandGroup(cs ICommandGroup)
 
 	// Get the current questioning status, if any.
 	GetQuestioning() IQuestionResult

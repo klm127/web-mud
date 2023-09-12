@@ -6,7 +6,7 @@ select * from mud.beings where name = $1;
 select * from mud.beings where id = $1;
 
 -- name: CreateBeing :one
-insert into mud.beings (name, description, room, owner) values ($1, $2, $3, $4) returning *;
+insert into mud.beings (name, description, room) values ($1, $2, $3) returning *;
 
 -- name: UpdateBeingOwner :exec
 update mud.beings set owner=$2 where id=$1;

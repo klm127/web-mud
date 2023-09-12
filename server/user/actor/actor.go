@@ -12,6 +12,7 @@ import (
 	"github.com/pwsdc/web-mud/interfaces/iworld"
 	"github.com/pwsdc/web-mud/server/user/actor/message"
 	"github.com/pwsdc/web-mud/util/re"
+	"github.com/pwsdc/web-mud/world"
 )
 
 // implements interface
@@ -84,7 +85,7 @@ func (actor *Actor) Disconnect() {
 		actor.onDisconnect(actor)
 	}
 	if actor.being != nil {
-		actor.being.Offload()
+		actor.being.Save()
 	}
 	actor.conn.Close()
 }
@@ -133,8 +134,8 @@ func (actor *Actor) GetCommandGroup(key string) (iactor.ICommandGroup, bool) {
 func (actor *Actor) SetCommandGroup(cs iactor.ICommandGroup) {
 	actor.commands[cs.GetName()] = cs
 }
-func (actor *Actor) RemoveCommandSet(key string) {
-	delete(actor.commands, key)
+func (actor *Actor) RemoveCommandGroup(cs iactor.ICommandGroup) {
+	delete(actor.commands, cs.GetName())
 }
 func (actor *Actor) GetQuestioning() iactor.IQuestionResult {
 	return actor.questioning
@@ -148,13 +149,18 @@ func (actor *Actor) StartQuestioning(inter iactor.IInterrogatory) {
 	actor.questioning.AskNext()
 }
 func (actor *Actor) SetUser(user *dbg.MudUser) {
+	if user == nil {
+		actor.ErrorMessage("You are trying to act with a user that doesn't exist.")
+		return
+	}
 	actor.user = user
-	//actor.being = world.GetBeing(user.Being)
+	actor.being = world.Beings.GetHuman(user.Being, actor)
 }
 func (actor *Actor) GetUser() *dbg.MudUser {
 	return actor.user
 }
 func (actor *Actor) RemoveUser() {
+	world.Beings.Remove(actor.being)
 	actor.user = nil
 }
 func (actor *Actor) Being() iworld.IBeing {

@@ -70,9 +70,9 @@ func onLoginSubmit(actor iactor.IActor, qr iactor.IQuestionResult) {
 		actor.StartQuestioning(loginQuestions)
 		return
 	}
+	actor.MessageSimplef("Welcome back, %s.", uname)
 	actor.SetUser(&dbuser)
 	actor.SetCommandGroup(UserLoggedInCommands)
-	actor.MessageSimplef("Welcome back, %s.", uname)
 	actor.EndQuestioning()
 }
 
@@ -81,6 +81,11 @@ func register(actor iactor.IActor, msg string) {
 }
 
 func onRegisterSubmit(actor iactor.IActor, qr iactor.IQuestionResult) {
+
+	if qr == nil || actor == nil {
+		fmt.Printf("Problem on register submit; nil parameter.")
+		return
+	}
 
 	r_map := *qr.GetResult()
 	uname, ok := r_map["username"]
@@ -101,26 +106,26 @@ func onRegisterSubmit(actor iactor.IActor, qr iactor.IQuestionResult) {
 		actor.StartQuestioning(registerQuestions)
 		return
 	}
-
-	//being := world.NewBeing(uname, "", arg.Config.World.StartRoom(), nil)
-	// if being == nil {
-	// 	actor.ErrorMessage("I couldn't find a body for you to inhabit, sorry!")
-	// 	return
-	// }
+	being, err := db.Store.NewBeingInStartRoom(uname)
+	if err != nil {
+		actor.ErrorMessage("I couldn't find a body for you to inhabit, sorry!")
+		return
+	}
 	cuserparams := dbg.CreateUserParams{
 		Name:     uname,
 		Password: pw,
 		Level:    dbg.MudUserlevelPlayer,
-		//Being:    nil,
+		Being:    being.ID,
 	}
 	dbuser, err := db.Store.Query.CreateUser(context.Background(), &cuserparams)
 	if err != nil {
 		fmt.Println(err.Error())
 		actor.ErrorMessage("For some reason I couldn't remember you.")
-		//world.DeleteBeing(*being)
+		db.Store.DeleteBeingEntry(being.ID)
 		actor.StartQuestioning(registerQuestions)
 		return
 	}
+	db.Store.SetBeingOwner(being, dbuser.ID)
 	actor.SetUser(&dbuser)
 	actor.SetCommandGroup(UserLoggedInCommands)
 	actor.MessageSimple(fmt.Sprintf("It's a pleasure to meet you, %s!", uname))
