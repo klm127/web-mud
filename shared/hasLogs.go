@@ -1,6 +1,8 @@
 package shared
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type HasLogs struct {
 	logs []log
@@ -10,6 +12,7 @@ type iHasLogs interface {
 	hasLogsInit()
 	Log(txt string)
 	GetLogs() *[]string
+	GetLogRaw() *[]log
 }
 
 func (hl *HasLogs) hasLogsInit() {
@@ -30,6 +33,10 @@ func (hl *HasLogs) GetLogs() *[]string {
 		lgs = append(lgs, l.String())
 	}
 	return &lgs
+}
+
+func (hl *HasLogs) GetLogRaw() *[]log {
+	return &hl.logs
 }
 
 func HasLogsInit(toInit iHasLogs) {

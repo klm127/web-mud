@@ -3,8 +3,18 @@ package admincommands
 import (
 	"github.com/pwsdc/web-mud/interfaces/iserver/iactor"
 	"github.com/pwsdc/web-mud/server/user/actor"
+	"github.com/pwsdc/web-mud/server/user/actor/command"
 	"github.com/pwsdc/web-mud/server/user/actor/message"
 )
+
+func init() {
+	list_cmd := command.NewSplitCommand().Name("list").Desc("lists objects instanced on the server").OnExec(list_base)
+
+	list_actors_cmd := command.NewCommand().Name("actors").Desc("list actors instanced on the server").OnExec(listActors)
+	list_cmd.SetSplit("actors", list_actors_cmd.Get())
+
+	AdminCommands.RegisterCommand(list_cmd.Get())
+}
 
 // actors disconnect id
 
@@ -24,7 +34,7 @@ func listActors(an_actor iactor.IActor, msg string) {
 
 func getLister(actor iactor.IActor) func(*map[int64]iactor.IActor) {
 	return func(amap *map[int64]iactor.IActor) {
-		mb := message.New().Text("Active actors:").NewLine(1).Next()
+		mb := message.New().Text("Active actors logs:").NewLine(1).Next()
 		for id, v := range *amap {
 			mb.Textf("Actor id: %d ", id)
 			if v.Being() != nil {

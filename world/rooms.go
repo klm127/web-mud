@@ -29,6 +29,7 @@ func (r *rooms) Get(id int64) iworld.IRoom {
 			room_loaded = nil
 			return nil
 		}
+		r.Logf("Room with id %d and name '%s' initialized.", new_room.GetId(), new_room.Name())
 		return new_room
 	}
 	return room_loaded

@@ -34,11 +34,12 @@ func (b *beings) GetHuman(id int64, actor iactor.IActor) iworld.IBeing {
 		b.Error(err.Error())
 		return nil
 	}
+	b.Logf("Created human being with id %d and name %s", b_new.GetId(), b_new.Name())
 	b.beings[id] = b_new
 	room_id := b_new.GetData().Room
 	room := Rooms.Get(room_id)
 	if room == nil {
-		b.Errorf("Failed to initialize room %d for being %s.", room_id, b_new.Name())
+		b.Errorf("Failed to initialize room %d for being named '%s'.", room_id, b_new.Name())
 		return nil
 	}
 	room.AddBeing(b_new)
