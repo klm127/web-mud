@@ -13,6 +13,8 @@ type IRoom interface {
 	AddBeing(IBeing)
 	// Remove a being from this room
 	RemoveBeing(IBeing)
+	// Called when a sound is emitted
+	SoundEmit(ISound)
 }
 
 // For anything that's in a room

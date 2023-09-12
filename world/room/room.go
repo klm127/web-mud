@@ -65,3 +65,9 @@ func (r *room) AddBeing(new_being iworld.IBeing) {
 func (r *room) RemoveBeing(to_remove iworld.IBeing) {
 	delete(r.beingsHere, to_remove.GetId())
 }
+
+func (r *room) SoundEmit(sound iworld.ISound) {
+	for _, v := range r.beingsHere {
+		v.SoundHear(sound)
+	}
+}

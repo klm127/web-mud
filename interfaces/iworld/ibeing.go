@@ -12,4 +12,6 @@ type IBeing interface {
 	SeeRoom()
 	// Called before being is deleted from a map so it can do whatever it needs to do
 	Removing()
+	// Called by a room when a sound is emitted
+	SoundHear(ISound)
 }
