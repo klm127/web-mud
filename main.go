@@ -7,6 +7,8 @@ import (
 	"github.com/pwsdc/web-mud/arg"
 	"github.com/pwsdc/web-mud/db"
 	"github.com/pwsdc/web-mud/server"
+	"github.com/pwsdc/web-mud/server/user/actor"
+	basecommands "github.com/pwsdc/web-mud/server/user/base-commands"
 	"github.com/pwsdc/web-mud/server/workers"
 	"github.com/pwsdc/web-mud/util/console"
 )
@@ -17,9 +19,12 @@ func main() {
 	red := console.GetFgSprintf(245, 0, 0)
 	fmt.Println(green("Starting sdcmud"))
 	gin.SetMode(gin.ReleaseMode)
+
+	// Parse the command line arguments
 	arg.Parse()
 	arg.Config.PrintLogs()
 
+	// Create the server and connect to the database.
 	server := server.CreateServer()
 	fmt.Println(green("Connecting to database on port "+arg.Config.Db.Port()) + ".")
 	err := db.Store.Connect()
@@ -28,13 +33,18 @@ func main() {
 		fmt.Println(red("Failed to connect to postgres! Error: %s", err.Error()))
 		return
 	}
+
+	// Set the default command groups for a logged-out connection
+	actor.SetDefaultCommandGroups(basecommands.UserLoggedOutCommands, basecommands.UserInfoCommands)
+
+	// Start all the background workers.
+	workers.StartAllWorkers()
+
+	// Start the server
 	fmt.Println(green("HTTP Server listening on port "+arg.Config.Http.Port()) + ".")
 	fmt.Println(blue("http://localhost:" + arg.Config.Http.Port()))
-
-	workers.StartAllWorkers()
 	err = server.Run("localhost:" + arg.Config.Http.Port())
 	if err != nil {
 		fmt.Println(red("Server exited. %s", err.Error()))
 	}
-
 }

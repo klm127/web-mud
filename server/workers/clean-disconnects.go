@@ -5,7 +5,8 @@ import (
 	"time"
 
 	"github.com/pwsdc/web-mud/arg"
-	"github.com/pwsdc/web-mud/server/actor/base"
+	"github.com/pwsdc/web-mud/interfaces/iserver/iactor"
+	"github.com/pwsdc/web-mud/server/user/actor"
 )
 
 var idle_cleaner_running bool
@@ -15,24 +16,25 @@ func StartIdleConnectionCleaner() {
 	interval := arg.Config.Socket.IdleCheckInterval()
 	timeout := float64(arg.Config.Socket.IdleTimeout())
 	idle_cleaner_running = true
+	traverser := getActorIdleTraverser(timeout)
 	for idle_cleaner_running {
-		CleanIdles(timeout)
+		actor.Traverse(traverser, false)
 		time.Sleep(time.Duration(interval) * time.Second)
 	}
 }
 
-func CleanIdles(idle_time_minutes float64) int {
-	bye_msg := fmt.Sprintf("You are being disconnected because you have been idle for more than %v minutes.", idle_time_minutes)
-	idles_cleaned := 0
-	for _, actor := range base.Actors {
-		actor_last_talked := actor.GetTimeSinceLastTalked()
-		if actor_last_talked.Minutes() > idle_time_minutes {
-			actor.MessageSimple(bye_msg)
-			actor.Disconnect()
-			idles_cleaned += 1
+func getActorIdleTraverser(timeout_mins float64) func(*map[int64]iactor.IActor) {
+	bye_msg := fmt.Sprintf("You are being disconnected because you have been idle for more than %v minutes.", timeout_mins)
+	return func(actors *map[int64]iactor.IActor) {
+		amap := *actors
+		for _, actor := range amap {
+			time_since := actor.GetTimeSinceLastTalked()
+			if time_since.Minutes() > timeout_mins {
+				actor.MessageSimple(bye_msg)
+				actor.Disconnect()
+			}
 		}
 	}
-	return idles_cleaned
 }
 
 func StopIdleConnectionCleaner() {

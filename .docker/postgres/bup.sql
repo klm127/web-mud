@@ -5,7 +5,7 @@
 -- Dumped from database version 15.4 (Debian 15.4-1.pgdg110+1)
 -- Dumped by pg_dump version 15.4 (Debian 15.4-1.pgdg110+1)
 
--- Started on 2023-09-11 17:38:24 UTC
+-- Started on 2023-09-11 16:21:59 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -20,7 +20,7 @@ SET row_security = off;
 
 DROP DATABASE IF EXISTS sdcmud;
 --
--- TOC entry 3357 (class 1262 OID 16385)
+-- TOC entry 3354 (class 1262 OID 16385)
 -- Name: sdcmud; Type: DATABASE; Schema: -; Owner: sdcadmin
 --
 
@@ -29,6 +29,7 @@ CREATE DATABASE sdcmud WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVID
 
 ALTER DATABASE sdcmud OWNER TO sdcadmin;
 
+\connect sdcmud
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -52,7 +53,7 @@ CREATE SCHEMA mud;
 ALTER SCHEMA mud OWNER TO pg_database_owner;
 
 --
--- TOC entry 3358 (class 0 OID 0)
+-- TOC entry 3355 (class 0 OID 0)
 -- Dependencies: 6
 -- Name: SCHEMA mud; Type: COMMENT; Schema: -; Owner: pg_database_owner
 --
@@ -112,7 +113,7 @@ CREATE SEQUENCE mud.beings_id_seq
 ALTER TABLE mud.beings_id_seq OWNER TO sdcadmin;
 
 --
--- TOC entry 3359 (class 0 OID 0)
+-- TOC entry 3356 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: beings_id_seq; Type: SEQUENCE OWNED BY; Schema: mud; Owner: sdcadmin
 --
@@ -162,7 +163,7 @@ CREATE SEQUENCE mud.rooms_id_seq
 ALTER TABLE mud.rooms_id_seq OWNER TO sdcadmin;
 
 --
--- TOC entry 3360 (class 0 OID 0)
+-- TOC entry 3357 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: rooms_id_seq; Type: SEQUENCE OWNED BY; Schema: mud; Owner: sdcadmin
 --
@@ -181,8 +182,7 @@ CREATE TABLE mud.users (
     password character varying NOT NULL,
     created timestamp without time zone DEFAULT now() NOT NULL,
     last_login timestamp without time zone DEFAULT now() NOT NULL,
-    level mud.userlevel NOT NULL,
-    being bigint NOT NULL
+    level mud.userlevel NOT NULL
 );
 
 
@@ -204,7 +204,7 @@ CREATE SEQUENCE mud.users_id_seq
 ALTER TABLE mud.users_id_seq OWNER TO sdcadmin;
 
 --
--- TOC entry 3361 (class 0 OID 0)
+-- TOC entry 3358 (class 0 OID 0)
 -- Dependencies: 216
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: mud; Owner: sdcadmin
 --
@@ -237,7 +237,7 @@ ALTER TABLE ONLY mud.users ALTER COLUMN id SET DEFAULT nextval('mud.users_id_seq
 
 
 --
--- TOC entry 3351 (class 0 OID 16427)
+-- TOC entry 3348 (class 0 OID 16427)
 -- Dependencies: 220
 -- Data for Name: beings; Type: TABLE DATA; Schema: mud; Owner: sdcadmin
 --
@@ -245,7 +245,7 @@ ALTER TABLE ONLY mud.users ALTER COLUMN id SET DEFAULT nextval('mud.users_id_seq
 
 
 --
--- TOC entry 3349 (class 0 OID 16418)
+-- TOC entry 3346 (class 0 OID 16418)
 -- Dependencies: 218
 -- Data for Name: rooms; Type: TABLE DATA; Schema: mud; Owner: sdcadmin
 --
@@ -253,7 +253,7 @@ ALTER TABLE ONLY mud.users ALTER COLUMN id SET DEFAULT nextval('mud.users_id_seq
 
 
 --
--- TOC entry 3346 (class 0 OID 16402)
+-- TOC entry 3343 (class 0 OID 16402)
 -- Dependencies: 215
 -- Data for Name: users; Type: TABLE DATA; Schema: mud; Owner: sdcadmin
 --
@@ -261,7 +261,7 @@ ALTER TABLE ONLY mud.users ALTER COLUMN id SET DEFAULT nextval('mud.users_id_seq
 
 
 --
--- TOC entry 3362 (class 0 OID 0)
+-- TOC entry 3359 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: beings_id_seq; Type: SEQUENCE SET; Schema: mud; Owner: sdcadmin
 --
@@ -270,7 +270,7 @@ SELECT pg_catalog.setval('mud.beings_id_seq', 1, false);
 
 
 --
--- TOC entry 3363 (class 0 OID 0)
+-- TOC entry 3360 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: rooms_id_seq; Type: SEQUENCE SET; Schema: mud; Owner: sdcadmin
 --
@@ -279,12 +279,12 @@ SELECT pg_catalog.setval('mud.rooms_id_seq', 1, false);
 
 
 --
--- TOC entry 3364 (class 0 OID 0)
+-- TOC entry 3361 (class 0 OID 0)
 -- Dependencies: 216
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: mud; Owner: sdcadmin
 --
 
-SELECT pg_catalog.setval('mud.users_id_seq', 2, true);
+SELECT pg_catalog.setval('mud.users_id_seq', 1, false);
 
 
 --
@@ -306,15 +306,6 @@ ALTER TABLE ONLY mud.rooms
 
 
 --
--- TOC entry 3202 (class 2606 OID 16436)
--- Name: beings unique_name; Type: CONSTRAINT; Schema: mud; Owner: sdcadmin
---
-
-ALTER TABLE ONLY mud.beings
-    ADD CONSTRAINT unique_name UNIQUE (name);
-
-
---
 -- TOC entry 3196 (class 2606 OID 16412)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: mud; Owner: sdcadmin
 --
@@ -323,16 +314,7 @@ ALTER TABLE ONLY mud.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
---
--- TOC entry 3203 (class 2606 OID 16437)
--- Name: users being_fk; Type: FK CONSTRAINT; Schema: mud; Owner: sdcadmin
---
-
-ALTER TABLE ONLY mud.users
-    ADD CONSTRAINT being_fk FOREIGN KEY (being) REFERENCES mud.beings(id) NOT VALID;
-
-
--- Completed on 2023-09-11 17:38:24 UTC
+-- Completed on 2023-09-11 16:21:59 UTC
 
 --
 -- PostgreSQL database dump complete

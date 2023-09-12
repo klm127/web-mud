@@ -1,4 +1,4 @@
-package base
+package prompt
 
 /*
 	Validators for questions. Used by question builder.

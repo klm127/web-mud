@@ -1,4 +1,4 @@
-package world
+package being
 
 import (
 	"context"
@@ -9,21 +9,25 @@ import (
 )
 
 type Being struct {
-	shared.HasLogs
+	shared.HasResults
 	data  *dbg.MudBeing
 	dirty bool
 }
 
-func createBeing(data *dbg.MudBeing) *Being {
+func _InitBeing(data *dbg.MudBeing) *Being {
 	b := Being{
 		data:  data,
 		dirty: false,
 	}
-	shared.HasLogsInit(&b)
+	shared.HasResultsInit(&b)
 	return &b
 }
 
-func (b *Being) UpdateToDatabase() {
+func (b *Being) GetData() *dbg.MudBeing {
+	return b.data
+}
+
+func (b *Being) Offload() {
 	if b.dirty {
 		params := dbg.UpdateBeingParams{
 			Description: b.data.Description,
@@ -36,4 +40,5 @@ func (b *Being) UpdateToDatabase() {
 			b.Logf("Error updating database: %s", err.Error())
 		}
 	}
+
 }

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/pwsdc/web-mud/server/actor/base"
+	"github.com/pwsdc/web-mud/server/user/actor"
 )
 
 type serverMsg struct {
@@ -31,6 +31,5 @@ func handleWebSocket(c *gin.Context) {
 		c.JSON(http.StatusFound, serverError("Couldn't upgrade web socket: "+err.Error()))
 		return
 	}
-	base.CreateActor(conn)
-
+	actor.StartActor(conn)
 }

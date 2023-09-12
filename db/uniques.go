@@ -10,11 +10,11 @@ Determines if a name is unique in the system. I.e: not used by any users or bein
 func (s *tStore) UniqueName(txt string) bool {
 	_, err := s.Query.GetBeingByName(context.Background(), txt)
 	if err != nil {
-		return false
+		return true
 	}
 	_, err = s.Query.GetUserByName(context.Background(), txt)
 	if err != nil {
-		return false
+		return true
 	}
-	return true
+	return false
 }
