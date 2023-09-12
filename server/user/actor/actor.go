@@ -85,8 +85,9 @@ func (actor *Actor) Disconnect() {
 		actor.onDisconnect(actor)
 	}
 	if actor.being != nil {
-		actor.being.Save()
+		world.Beings.Remove(actor.being)
 	}
+	// do anything with the user?
 	actor.conn.Close()
 }
 func (actor *Actor) OnDisconnect(cb func(iactor.IActor)) {

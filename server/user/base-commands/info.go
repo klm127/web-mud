@@ -19,7 +19,7 @@ var UserInfoCommands iactor.ICommandGroup
 func init() {
 	UserInfoCommands = command.NewCommandGroup("info")
 	help_cmd := command.NewCommand().Name("help").Desc("gets help for a command").OnExec(help).Get()
-	UserInfoCommands.RegisterCommand(help_cmd)
+	UserInfoCommands.RegisterCommands(help_cmd)
 }
 
 func help(actor iactor.IActor, msg string) {

@@ -7,6 +7,7 @@ import (
 	"github.com/pwsdc/web-mud/arg"
 	"github.com/pwsdc/web-mud/db"
 	"github.com/pwsdc/web-mud/server"
+	admincommands "github.com/pwsdc/web-mud/server/admin-commands"
 	"github.com/pwsdc/web-mud/server/user/actor"
 	basecommands "github.com/pwsdc/web-mud/server/user/base-commands"
 	"github.com/pwsdc/web-mud/server/workers"
@@ -35,7 +36,8 @@ func main() {
 	}
 
 	// Set the default command groups for a logged-out connection
-	actor.SetDefaultCommandGroups(basecommands.UserLoggedOutCommands, basecommands.UserInfoCommands)
+	actor.SetDefaultCommandGroups(basecommands.UserLoggedOutCommands, basecommands.UserInfoCommands, basecommands.ConnectionCommands, admincommands.AdminCommands)
+	// Remember to remove admin commands from above
 
 	// Start all the background workers.
 	workers.StartAllWorkers()
