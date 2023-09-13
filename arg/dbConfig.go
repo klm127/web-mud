@@ -18,80 +18,80 @@ type dbConfig struct {
 	db       *string `env:"db"`
 }
 
-func (self *dbConfig) setFlags() {
-	shared.HasLogsInit(self)
-	self.host = flag.String("db_container", "localhost", "Set the host for the database connection.")
-	self.port = flag.String("db_port", "5432", "Set the port for the database connection.")
-	self.user = flag.String("db_user", "postgres", "Set the user for the database connection.")
-	self.password = flag.String("db_pw", "password", "Set the password for the database connection.")
-	self.db = flag.String("db", "bwgdb", "Set the name of the database for the database connection.")
+func (dbc *dbConfig) setFlags() {
+	shared.HasLogsInit(dbc)
+	dbc.host = flag.String("db_container", "localhost", "Set the host for the database connection.")
+	dbc.port = flag.String("db_port", "5432", "Set the port for the database connection.")
+	dbc.user = flag.String("db_user", "postgres", "Set the user for the database connection.")
+	dbc.password = flag.String("db_pw", "password", "Set the password for the database connection.")
+	dbc.db = flag.String("db", "bwgdb", "Set the name of the database for the database connection.")
 }
 
 // checks the environment variables when no command-line argument was given
-func (self *dbConfig) parseEnv() {
+func (dbc *dbConfig) parseEnv() {
 
 	os_host := os.Getenv("db_container")
 	if os_host == "" {
-		configWarn("db_container", *self.host)
+		configWarn("db_container", *dbc.host)
 	} else {
-		*self.host = os_host
+		*dbc.host = os_host
 	}
-	self.Log("Host set to: " + *self.host + " from environment.")
+	dbc.Log("Host set to: " + *dbc.host + " from environment.")
 
 	os_port := os.Getenv("db_port")
 	if os_host == "" {
-		configWarn("db_port", *self.port)
+		configWarn("db_port", *dbc.port)
 	} else {
-		*self.port = os_port
+		*dbc.port = os_port
 	}
-	self.Log("Port set to: " + *self.port + " from environment.")
+	dbc.Log("Port set to: " + *dbc.port + " from environment.")
 
 	os_user := os.Getenv("db_user")
 	if os_host == "" {
-		configWarn("db_user", *self.user)
+		configWarn("db_user", *dbc.user)
 	} else {
-		*self.user = os_user
+		*dbc.user = os_user
 	}
-	self.Log("User set to: " + *self.user + " from environment.")
+	dbc.Log("User set to: " + *dbc.user + " from environment.")
 
 	os_pw := os.Getenv("db_pw")
 	if os_pw == "" {
-		configWarn("db_pw", *self.password)
+		configWarn("db_pw", *dbc.password)
 	} else {
-		*self.password = os_pw
+		*dbc.password = os_pw
 	}
-	self.Log("Password set to: ********" + " from environment.")
+	dbc.Log("Password set to: ********" + " from environment.")
 
 	os_db := os.Getenv("db")
 	if os_db == "" {
-		configWarn("db", *self.db)
+		configWarn("db", *dbc.db)
 	} else {
-		*self.db = os_db
+		*dbc.db = os_db
 	}
-	self.Log("Database set to: " + *self.db + " from environment.")
+	dbc.Log("Database set to: " + *dbc.db + " from environment.")
 }
 
-func (self *dbConfig) Host() string {
-	return *self.host
+func (dbc *dbConfig) Host() string {
+	return *dbc.host
 }
-func (self *dbConfig) Port() string {
-	return *self.port
+func (dbc *dbConfig) Port() string {
+	return *dbc.port
 }
-func (self *dbConfig) User() string {
-	return *self.user
+func (dbc *dbConfig) User() string {
+	return *dbc.user
 }
-func (self *dbConfig) Password() string {
-	return *self.password
+func (dbc *dbConfig) Password() string {
+	return *dbc.password
 }
-func (self *dbConfig) Database() string {
-	return *self.db
+func (dbc *dbConfig) Database() string {
+	return *dbc.db
 }
 
 // gets a connection string for postgres
-func (self *dbConfig) ConnectString() string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", *self.user, *self.password, *self.host, *self.port, *self.db)
+func (dbc *dbConfig) ConnectString() string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", *dbc.user, *dbc.password, *dbc.host, *dbc.port, *dbc.db)
 }
 
-func (self *dbConfig) ConnectStringLocalhost() string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", *self.user, *self.password, "localhost", *self.port, *self.db)
+func (dbc *dbConfig) ConnectStringLocalhost() string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", *dbc.user, *dbc.password, "localhost", *dbc.port, *dbc.db)
 }

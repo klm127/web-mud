@@ -41,16 +41,16 @@ func Parse() {
 	}
 }
 
-func (self *argConfig) PrintLogs() {
-	dbl := *self.Db.GetLogs()
+func (ac *argConfig) PrintLogs() {
+	dbl := *ac.Db.GetLogs()
 	for _, v := range dbl {
 		fmt.Printf("DB Config: %v\n", v)
 	}
-	httpl := *self.Http.GetLogs()
+	httpl := *ac.Http.GetLogs()
 	for _, v := range httpl {
 		fmt.Printf("HTTP Config: %v\n", v)
 	}
-	socketl := *self.Socket.GetLogs()
+	socketl := *ac.Socket.GetLogs()
 	for _, v := range socketl {
 		fmt.Printf("Socket Config: %v\n", v)
 	}

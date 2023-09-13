@@ -35,3 +35,9 @@ func (wc *worldConfig) parseEnv() {
 func (wc *worldConfig) StartRoom() int64 {
 	return *wc.startRoom
 }
+
+func (wc *worldConfig) OverrideStartRoom(new_room int64) {
+	old_room := *wc.startRoom
+	wc.startRoom = &new_room
+	wc.Logf("Previous start room with id %d overriden with new room %d.", old_room, new_room)
+}

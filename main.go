@@ -12,6 +12,7 @@ import (
 	basecommands "github.com/pwsdc/web-mud/server/user/base-commands"
 	"github.com/pwsdc/web-mud/server/workers"
 	"github.com/pwsdc/web-mud/util/console"
+	buildercommands "github.com/pwsdc/web-mud/world/builder-commands"
 )
 
 func main() {
@@ -35,8 +36,11 @@ func main() {
 		return
 	}
 
+	// Ensure the start room exists
+	db.Store.EnsureStartRoom()
+
 	// Set the default command groups for a logged-out connection
-	actor.SetDefaultCommandGroups(basecommands.UserLoggedOutCommands, basecommands.UserInfoCommands, basecommands.ConnectionCommands, admincommands.AdminCommands)
+	actor.SetDefaultCommandGroups(basecommands.UserLoggedOutCommands, basecommands.UserInfoCommands, basecommands.ConnectionCommands, admincommands.AdminCommands, buildercommands.BuilderCommands)
 	// Remember to remove admin commands from above
 
 	// Start all the background workers.

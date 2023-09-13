@@ -12,3 +12,5 @@ type ICommand interface {
 	// Execute this command. Msg is any extra text with the command-executing sentence.
 	Execute(actor IActor, msg string)
 }
+
+type CommandFunc func(IActor, string)

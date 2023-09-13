@@ -29,7 +29,6 @@ CREATE DATABASE sdcmud WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVID
 
 ALTER DATABASE sdcmud OWNER TO sdcadmin;
 
-\connect sdcmud
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
