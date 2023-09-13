@@ -14,8 +14,8 @@ export class Terminal {
         this.messageArea = Dom.el('div');
         this.outerScrollArea.append(this.messageArea);
         this.messageArea.id = 'terminal-message-area';
-        this.inputArea = Dom.el('div');
-        this.input = Dom.el('input');
+        this.inputArea = Dom.el('div', ['terminal-input']);
+        this.input = Dom.el('input', ['terminal-input']);
         this.input.type = 'text';
         this.inputArea.append(this.input);
         this.el.append(this.outerScrollArea, this.inputArea);
@@ -74,13 +74,16 @@ export class Terminal {
         }
         else {
             const div = Dom.el('div');
+            div.classList.add('terminal-server-msg');
             this.parseMessagePartRecurse(msg, 0, div);
             this.addMessageEl(div);
         }
     }
     parseMessagePartRecurse(s, index, lastParent) {
         const part = s.Parts[index];
-        const partEl = Dom.el('span', undefined, { display: 'inline-block' });
+        const partEl = Dom.el('span', ['terminal-server-msg'], {
+            display: 'inline-block',
+        });
         if (part.Color) {
             partEl.style.color = part.Color;
         }

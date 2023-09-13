@@ -51,6 +51,7 @@ func (b *beings) Remove(being iworld.IBeing) {
 		b.Error("Remove called with nil parameter.")
 		return
 	}
+	b.Logf("Being '%s' with id %d removed.", being.Name(), being.GetId())
 	id := being.GetId()
 	being.Removing()
 	delete(b.beings, id)

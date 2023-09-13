@@ -35,6 +35,10 @@ func getNextId() int64 {
 	return next_id
 }
 
+func removeActor(id int64) {
+	delete(actors, id)
+}
+
 func SetDefaultCommandGroups(groups ...iactor.ICommandGroup) {
 	for _, v := range groups {
 		default_command_groups = append(default_command_groups, v)
@@ -58,5 +62,18 @@ func Traverse(cb func(*map[int64]iactor.IActor), lock bool) {
 	cb(&actors)
 	if lock {
 		actors_map_mutex.Unlock()
+	}
+}
+
+func logoutAnyExtantActors(user_id int64) {
+	for _, v := range actors {
+		user := v.GetUser()
+		if user != nil {
+			if user.ID == user_id {
+				v.Errorf("You have logged in from another location.")
+				v.Disconnect()
+			}
+
+		}
 	}
 }

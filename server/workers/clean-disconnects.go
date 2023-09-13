@@ -27,11 +27,11 @@ func getActorIdleTraverser(timeout_mins float64) func(*map[int64]iactor.IActor) 
 	bye_msg := fmt.Sprintf("You are being disconnected because you have been idle for more than %v minutes.", timeout_mins)
 	return func(actors *map[int64]iactor.IActor) {
 		amap := *actors
-		for _, actor := range amap {
-			time_since := actor.GetTimeSinceLastTalked()
+		for _, an_actor := range amap {
+			time_since := an_actor.GetTimeSinceLastTalked()
 			if time_since.Minutes() > timeout_mins {
-				actor.MessageSimple(bye_msg)
-				actor.Disconnect()
+				an_actor.MessageSimple(bye_msg)
+				an_actor.Disconnect()
 			}
 		}
 	}

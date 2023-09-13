@@ -87,6 +87,7 @@ func (actor *Actor) Disconnect() {
 	if actor.being != nil {
 		world.Beings.Remove(actor.being)
 	}
+	removeActor(actor.id)
 	// do anything with the user?
 	actor.conn.Close()
 }
@@ -154,6 +155,7 @@ func (actor *Actor) SetUser(user *dbg.MudUser) {
 		actor.ErrorMessage("You are trying to act with a user that doesn't exist.")
 		return
 	}
+	logoutAnyExtantActors(user.ID)
 	actor.user = user
 	actor.being = world.Beings.GetHuman(user.Being, actor)
 }
