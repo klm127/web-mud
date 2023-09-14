@@ -22,7 +22,7 @@ func (l *log) write(txt string) {
 }
 
 func (l *log) String() string {
-	return fmt.Sprintf("%d:%d:%d %s", l.time.Hour(), l.time.Minute(), l.time.Second(), l.txt)
+	return fmt.Sprintf("%2d:%2d:%2d %s", l.time.Hour(), l.time.Minute(), l.time.Second(), l.txt)
 }
 
 func (l *log) Time() time.Time {

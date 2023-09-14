@@ -15,10 +15,21 @@ type IRoom interface {
 	RemoveBeing(IBeing)
 	// Called when a sound is emitted
 	SoundEmit(ISound)
+	// Get a room builder for this room
+	GetBuilder() IRoomBuilder
+	// Get a list of available directions
+	GetDirectionList() string
 }
 
 // For anything that's in a room
 type IInRoom interface {
 	GetRoom() IRoom
 	SetRoom(IRoom)
+}
+
+type IRoomBuilder interface {
+	Name(string) IRoomBuilder
+	Desc(string) IRoomBuilder
+	// Returns error string for user messaging; 0 length if success
+	Link(IRoom, string) string
 }

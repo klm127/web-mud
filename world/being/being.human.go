@@ -66,6 +66,13 @@ func (bh *beingHuman) SeeRoom() {
 	msg := message.New().Text(bh.room.Name()).Class(css.RoomName).NewLine(1).Next()
 	msg.Text(bh.room.Desc()).Class(css.RoomDesc)
 	bh.actor.Message(msg.Bytes())
+	dirs := bh.room.GetDirectionList()
+	if len(dirs) == 0 {
+		bh.actor.MessageSimplef("There seem to be no exits.")
+	} else {
+		msgdir := message.New().Text("You can go: ").Next().Text(bh.room.GetDirectionList())
+		bh.actor.Message(msgdir.Bytes())
+	}
 }
 
 func (bh *beingHuman) Removing() {

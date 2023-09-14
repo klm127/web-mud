@@ -13,8 +13,5 @@ func (s *tStore) UniqueName(txt string) bool {
 		return true
 	}
 	_, err = s.Query.GetUserByName(context.Background(), txt)
-	if err != nil {
-		return true
-	}
-	return false
+	return err != nil
 }

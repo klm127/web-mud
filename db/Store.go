@@ -25,22 +25,22 @@ func init() {
 	shared.HasResultsInit(Store)
 }
 
-func (self *tStore) Disconnect() {
-	self.Query = nil
-	if self.conn == nil {
+func (store *tStore) Disconnect() {
+	store.Query = nil
+	if store.conn == nil {
 		return
 	}
-	err := self.conn.Ping()
+	err := store.conn.Ping()
 	if err != nil {
-		self.conn = nil
+		store.conn = nil
 		return
 	}
-	self.Log("Disconnected from database.")
-	self.conn.Close()
+	store.Log("Disconnected from database.")
+	store.conn.Close()
 }
 
-func (self *tStore) Connect() error {
-	self.Disconnect()
+func (store *tStore) Connect() error {
+	store.Disconnect()
 	cnx := ""
 	if arg.Config.Http.DockerMode() {
 		cnx = arg.Config.Db.ConnectString()
@@ -49,28 +49,28 @@ func (self *tStore) Connect() error {
 	}
 	postgres, err := sql.Open("postgres", cnx)
 	if err != nil {
-		self.Error(fmt.Sprintf("Failed to connect to %s.\n\tError:%s", cnx, err.Error()))
+		store.Error(fmt.Sprintf("Failed to connect to %s.\n\tError:%s", cnx, err.Error()))
 		return err
 	}
 	err = postgres.Ping()
 	if err != nil {
-		self.Error(fmt.Sprintf("Ping failed on new postgres connection to %s. \n\tError:%s", cnx, err.Error()))
+		store.Error(fmt.Sprintf("Ping failed on new postgres connection to %s. \n\tError:%s", cnx, err.Error()))
 		return err
 	} else {
-		self.Log(fmt.Sprintf("Pinged postgres."))
+		store.Log("Pinged postgres.")
 	}
-	self.conn = postgres
-	self.Query = dbg.New(self.conn)
-	self.Log("Succesfully connected to postgres.")
+	store.conn = postgres
+	store.Query = dbg.New(store.conn)
+	store.Log("Succesfully connected to postgres.")
 	return nil
 }
 
-func (self *tStore) PrintLogs() {
-	logs := *self.GetLogs()
+func (store *tStore) PrintLogs() {
+	logs := *store.GetLogs()
 	for _, log := range logs {
 		fmt.Println("db log:", log)
 	}
-	errs := *self.GetErrors()
+	errs := *store.GetErrors()
 	for _, err := range errs {
 		fmt.Println("db err:", err)
 	}
