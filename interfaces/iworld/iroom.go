@@ -15,6 +15,8 @@ type IRoom interface {
 	RemoveBeing(IBeing)
 	// Called when a sound is emitted
 	SoundEmit(ISound)
+	// Called when a sight is emitted
+	SightEmit(ISeen)
 	// Get a room builder for this room
 	GetBuilder() IRoomBuilder
 	// Get a list of available directions

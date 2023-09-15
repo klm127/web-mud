@@ -78,6 +78,12 @@ func (r *troom) SoundEmit(sound iworld.ISound) {
 	}
 }
 
+func (r *troom) SightEmit(sight iworld.ISeen) {
+	for _, v := range r.beingsHere {
+		v.SightSee(sight)
+	}
+}
+
 func (r *troom) GetDirectionList() string {
 	possible := make([]string, 0, 10)
 	if r.data.N.Valid {

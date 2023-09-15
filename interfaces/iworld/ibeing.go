@@ -14,4 +14,6 @@ type IBeing interface {
 	Removing()
 	// Called by a room when a sound is emitted
 	SoundHear(ISound)
+	// Called by a room when a sight is emitted
+	SightSee(ISeen)
 }

@@ -1,12 +1,15 @@
 package buildercommands
 
 import (
+	"fmt"
+
 	"github.com/pwsdc/web-mud/db"
 	"github.com/pwsdc/web-mud/interfaces/iserver/iactor"
 	"github.com/pwsdc/web-mud/server/user/actor/command"
 	"github.com/pwsdc/web-mud/util/cmdvalidate"
 	"github.com/pwsdc/web-mud/util/language"
 	"github.com/pwsdc/web-mud/world"
+	"github.com/pwsdc/web-mud/world/sight"
 )
 
 func init() {
@@ -43,7 +46,15 @@ func createExit(actor iactor.IActor, msg string) {
 		return
 	}
 
-	actor.MessageSimplef("A void has manifested to the %s.", language.ParseDirectionFull(direction))
+	being := actor.Being()
+
+	dir_full := language.ParseDirectionFull(direction)
+	msg_self := fmt.Sprintf("You manifest a void to the %s.", dir_full)
+	msg_others := fmt.Sprintf("manifests a void to the %s.", dir_full)
+
+	seen := sight.NewSeen(being, &msg_self, &msg_others)
+
+	being.GetRoom().SightEmit(seen)
 }
 
 /*

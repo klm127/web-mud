@@ -108,3 +108,8 @@ func (bh *beingHuman) SoundHear(sound iworld.ISound) {
 	}
 	bh.actor.MessageSimplef("%s %s, \"%s\"", name, verb, msg)
 }
+
+func (bh *beingHuman) SightSee(sight iworld.ISeen) {
+	msg := sight.GetMessage(bh)
+	bh.actor.MessageSimplef(msg)
+}
