@@ -122,6 +122,39 @@ func (r *troom) GetDirectionList() string {
 	return strings.Join(possible, ", ")
 }
 
+func (room *troom) GetAdjacentID(v string) *int64 {
+	dir, ok := language.ParseDirection(v)
+	if !ok {
+		return nil
+	}
+	if dir == enum.North && room.data.N.Valid {
+		return &room.data.N.Int64
+	} else if dir == enum.South && room.data.S.Valid {
+		return &room.data.S.Int64
+	} else if dir == enum.East && room.data.E.Valid {
+		return &room.data.E.Int64
+	} else if dir == enum.West && room.data.W.Valid {
+		return &room.data.W.Int64
+	} else if dir == enum.NorthEast && room.data.Ne.Valid {
+		return &room.data.Ne.Int64
+	} else if dir == enum.NorthWest && room.data.Nw.Valid {
+		return &room.data.Nw.Int64
+	} else if dir == enum.SouthWest && room.data.Sw.Valid {
+		return &room.data.Sw.Int64
+	} else if dir == enum.SouthEast && room.data.Se.Valid {
+		return &room.data.Se.Int64
+	} else if dir == enum.In { // && room.data..Valid {
+		return nil
+	} else if dir == enum.Out { //& room.data. {
+		return nil // return &room.data.S.Int64
+	} else if dir == enum.Up && room.data.U.Valid {
+		return &room.data.U.Int64
+	} else if dir == enum.Down && room.data.D.Valid {
+		return &room.data.D.Int64
+	}
+	return nil
+}
+
 func (r *troom) GetBuilder() iworld.IRoomBuilder {
 	return r.builder
 }

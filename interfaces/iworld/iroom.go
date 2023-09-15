@@ -21,6 +21,8 @@ type IRoom interface {
 	GetBuilder() IRoomBuilder
 	// Get a list of available directions
 	GetDirectionList() string
+	// Get adacent room ID, or nil if none adjacent that direction
+	GetAdjacentID(v string) *int64
 }
 
 // For anything that's in a room
