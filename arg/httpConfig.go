@@ -26,6 +26,8 @@ func (hc *httpConfig) parseEnv() {
 	os_port := os.Getenv("http_port")
 	if os_port == "" {
 		configWarn("http_port", *hc.port)
+	} else {
+		*hc.port = os_port
 	}
 	hc.Log("Port set to: " + *hc.port + " from environment.")
 
