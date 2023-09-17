@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/pwsdc/web-mud/db/dbg"
+	"github.com/pwsdc/web-mud/interfaces/iserver"
 	"github.com/pwsdc/web-mud/interfaces/iserver/iactor"
 	"github.com/pwsdc/web-mud/interfaces/iworld"
 	"github.com/pwsdc/web-mud/server/user/actor/message"
@@ -18,7 +19,7 @@ import (
 // implements interface
 type Actor struct {
 	id              int64
-	conn            *websocket.Conn
+	conn            iserver.IConnection
 	commands        map[string]iactor.ICommandGroup
 	close_requested bool
 	time_opened     time.Time
@@ -63,7 +64,7 @@ func (actor *Actor) listenToSocketMessages() {
 	}
 }
 
-func (actor *Actor) GetConnection() *websocket.Conn {
+func (actor *Actor) GetConnection() iserver.IConnection {
 	return actor.conn
 }
 func (actor *Actor) GetTimeOpened() time.Time {

@@ -3,8 +3,8 @@ package iactor
 import (
 	"time"
 
-	"github.com/gorilla/websocket"
 	"github.com/pwsdc/web-mud/db/dbg"
+	"github.com/pwsdc/web-mud/interfaces/iserver"
 	"github.com/pwsdc/web-mud/interfaces/iworld"
 )
 
@@ -12,7 +12,7 @@ import (
 type IActor interface {
 
 	// Gets the underlying websocket connection.
-	GetConnection() *websocket.Conn
+	GetConnection() iserver.IConnection
 
 	// Get the time the connection was open.
 	GetTimeOpened() time.Time
