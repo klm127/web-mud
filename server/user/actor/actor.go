@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gorilla/websocket"
 	"github.com/pwsdc/web-mud/db/dbg"
 	"github.com/pwsdc/web-mud/interfaces/iserver"
 	"github.com/pwsdc/web-mud/interfaces/iserver/iactor"
@@ -31,7 +30,7 @@ type Actor struct {
 	mutex           *sync.Mutex
 }
 
-func newActor(actor_id int64, connect *websocket.Conn) *Actor {
+func newActor(actor_id int64, connect iserver.IConnection) *Actor {
 	actor := Actor{
 		id:              actor_id,
 		conn:            connect,

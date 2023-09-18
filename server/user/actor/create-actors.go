@@ -3,7 +3,7 @@ package actor
 import (
 	"sync"
 
-	"github.com/gorilla/websocket"
+	"github.com/pwsdc/web-mud/interfaces/iserver"
 	"github.com/pwsdc/web-mud/interfaces/iserver/iactor"
 )
 
@@ -40,12 +40,10 @@ func removeActor(id int64) {
 }
 
 func SetDefaultCommandGroups(groups ...iactor.ICommandGroup) {
-	for _, v := range groups {
-		default_command_groups = append(default_command_groups, v)
-	}
+	default_command_groups = append(default_command_groups, groups...)
 }
 
-func StartActor(connection *websocket.Conn) {
+func StartActor(connection iserver.IConnection) iactor.IActor {
 	actors_map_mutex.Lock()
 	id := getNextId()
 	actors[id] = newActor(id, connection)
@@ -53,6 +51,12 @@ func StartActor(connection *websocket.Conn) {
 		actors[id].SetCommandGroup(group)
 	}
 	actors_map_mutex.Unlock()
+	return actors[id]
+}
+
+func GetActor(id int64) (iactor.IActor, bool) {
+	actor, ok := actors[id]
+	return actor, ok
 }
 
 func Traverse(cb func(*map[int64]iactor.IActor), lock bool) {

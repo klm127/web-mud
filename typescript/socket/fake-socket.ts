@@ -7,7 +7,7 @@ type onOpenCb = (ev: Event) => any
  * FakeWebSocket is used when, for some reason, a real web socket can't be created. It uses HTTP and intervals to poll for updates.
  *
  */
-class FakeWebSocket implements WebSocket {
+export default class FakeWebSocket implements WebSocket {
 	binaryType: BinaryType
 	bufferedAmount: number
 	extensions: string

@@ -16,15 +16,13 @@ type serverMsg struct {
 func serverError(msg string) serverMsg {
 	return serverMsg{true, msg}
 }
-func serverGood(msg string) serverMsg {
-	return serverMsg{false, msg}
-}
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
 
+// For handling an actual web socket
 func handleWebSocket(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {

@@ -1,6 +1,9 @@
 package socket
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 type fakeSocket struct {
 	pending    [][]byte
@@ -18,7 +21,7 @@ func NewFakeSocket() *fakeSocket {
 func (fs *fakeSocket) ReadMessage() (int, []byte, error) {
 	var found []byte
 	for len(found) == 0 {
-
+		time.Sleep(1000)
 	}
 	fs.rec_mutex.Lock()
 	found = fs.received[0]
@@ -26,7 +29,7 @@ func (fs *fakeSocket) ReadMessage() (int, []byte, error) {
 	return 1, found, nil
 }
 
-func (fs *fakeSocket) WriteMessage(mtype int, val []byte, e error) error {
+func (fs *fakeSocket) WriteMessage(mtype int, val []byte) error {
 	fs.pend_mutex.Lock()
 	fs.pending = append(fs.pending, val)
 	return nil

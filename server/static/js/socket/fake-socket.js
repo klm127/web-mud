@@ -1,10 +1,9 @@
-"use strict";
 /**
  *
  * FakeWebSocket is used when, for some reason, a real web socket can't be created. It uses HTTP and intervals to poll for updates.
  *
  */
-class FakeWebSocket {
+export default class FakeWebSocket {
     binaryType;
     bufferedAmount;
     extensions;
