@@ -11,6 +11,9 @@ import (
 // An actor performs actions on the server and in the game.
 type IActor interface {
 
+	// Gets the ID for this actor. This is different from the user or being ids.
+	GetId() int64
+
 	// Gets the underlying websocket connection.
 	GetConnection() iserver.IConnection
 

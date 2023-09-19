@@ -63,6 +63,10 @@ func (actor *Actor) listenToSocketMessages() {
 	}
 }
 
+func (actor *Actor) GetId() int64 {
+	return actor.id
+}
+
 func (actor *Actor) GetConnection() iserver.IConnection {
 	return actor.conn
 }

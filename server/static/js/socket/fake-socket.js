@@ -11,14 +11,18 @@ export default class FakeWebSocket {
     errorCbs;
     messageCbs;
     openCbs;
+    sendQueue;
     protocol;
     readyState;
     url;
+    interval_id;
+    jwt;
     CONNECTING;
     OPEN;
     CLOSING;
     CLOSED;
     constructor(url) {
+        console.log('constructing fake web socket');
         this.binaryType = 'arraybuffer';
         this.bufferedAmount = 0;
         this.extensions = '';
@@ -26,6 +30,7 @@ export default class FakeWebSocket {
         this.errorCbs = new Set();
         this.messageCbs = new Set();
         this.openCbs = new Set();
+        this.sendQueue = [];
         this.protocol = 'fake-http-socket';
         this.readyState = 0;
         this.url = url;
@@ -33,6 +38,9 @@ export default class FakeWebSocket {
         this.OPEN = 1;
         this.CLOSING = 2;
         this.CLOSED = 3;
+        this.jwt = '';
+        this.poll = this.poll.bind(this);
+        this.interval_id = setInterval(this.poll, 1000);
     }
     set onclose(cb) {
         if (cb == null) {
@@ -107,7 +115,10 @@ export default class FakeWebSocket {
         throw new Error('Method not implemented.');
     }
     send(data) {
-        throw new Error('Method not implemented.');
+        this.sendQueue.push({
+            type: 'message',
+            data: data,
+        });
     }
     addEventListener(type, listener, options) {
         if (type == 'close') {
@@ -140,7 +151,7 @@ export default class FakeWebSocket {
             this.openCbs.delete(listener);
         }
     }
-    emitStringMessage(s) {
+    emitMessage(s) {
         const e = new MessageEvent('server-message-event', {
             data: JSON.stringify(s),
         });
@@ -148,7 +159,7 @@ export default class FakeWebSocket {
             f(e);
         }
     }
-    emitErrorMessage(s) {
+    emitError(s) {
         const e = new MessageEvent('server-error-event', {
             data: s,
         });
@@ -156,20 +167,61 @@ export default class FakeWebSocket {
             f(e);
         }
     }
-    async poll() {
-        let url = this.url;
-        let me = this;
-        fetch(url)
-            .then((r) => {
-            return r.json();
-        })
-            .then((r) => {
-            for (let i of r) {
-                me.emitStringMessage(i);
-            }
-        })
-            .catch((r) => {
-            me.emitErrorMessage(r);
+    emitOpen(s) {
+        const e = new MessageEvent('server-open-event', {
+            data: s,
         });
+        for (let f of this.openCbs) {
+            f(e);
+        }
+    }
+    emitClose(s) {
+        const e = new CloseEvent('server-close-event');
+        for (let f of this.closeCbs) {
+            f(e);
+        }
+    }
+    async poll() {
+        console.log('polling');
+        try {
+            const response = await fetch(this.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    sdcmcook: this.jwt,
+                },
+                body: JSON.stringify(this.sendQueue),
+            });
+            const result = await response.json();
+            this.sendQueue = [];
+            this.handleServerMessages(result);
+            const ac = response.headers.get('sdcmcook');
+            if (ac != null) {
+                this.jwt = ac;
+            }
+        }
+        catch (e) {
+            console.error('fake socket polling error: ', e);
+        }
+    }
+    handleServerMessages(servMessages) {
+        for (let m of servMessages) {
+            console.log(m);
+            if (m.event == 'open') {
+                this.emitOpen(m.data);
+            }
+            else if (m.event == 'close') {
+                this.emitClose(m.data);
+            }
+            else if (m.event == 'message') {
+                this.emitMessage(JSON.parse(m.data));
+            }
+            else if (m.event == 'error') {
+                this.emitMessage(m.data);
+            }
+            else {
+                console.error('unknown message event', m.data, 'from server');
+            }
+        }
     }
 }
