@@ -3,6 +3,7 @@ package admincommands
 import (
 	"github.com/pwsdc/web-mud/db"
 	"github.com/pwsdc/web-mud/interfaces/iserver/iactor"
+	"github.com/pwsdc/web-mud/server/socket"
 	"github.com/pwsdc/web-mud/server/user/actor/command"
 	"github.com/pwsdc/web-mud/server/user/actor/message"
 	"github.com/pwsdc/web-mud/world"
@@ -14,9 +15,11 @@ func init() {
 	log_db_cmd := command.NewCommand().Name("db").OnExec(logs_db).Get()
 	log_beings_cmd := command.NewCommand().Name("being").OnExec(logs_beings).Get()
 	log_rooms_cmd := command.NewCommand().Name("room").OnExec(logs_rooms).Get()
+	log_ips_cmd := command.NewCommand().Name("ip").OnExec(log_ips).Get()
 	log_cmd.SetSplit("db", log_db_cmd)
 	log_cmd.SetSplit("beings", log_beings_cmd)
 	log_cmd.SetSplit("rooms", log_rooms_cmd)
+	log_cmd.SetSplit("ips", log_ips_cmd)
 
 	AdminCommands.RegisterCommand(log_cmd.Get())
 }
@@ -41,4 +44,10 @@ func logs_rooms(actor iactor.IActor, msg string) {
 	mb := message.New().Text("Room logs:")
 	actor.Message(mb.Bytes())
 	world.Rooms.MessageResults(actor)
+}
+
+func log_ips(actor iactor.IActor, msg string) {
+	mb := message.New().Text("IP logs:")
+	actor.Message(mb.Bytes())
+	socket.IpLogger.MessageResults(actor)
 }

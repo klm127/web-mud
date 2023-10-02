@@ -29,5 +29,6 @@ func handleWebSocket(c *gin.Context) {
 		c.JSON(http.StatusFound, serverError("Couldn't upgrade web socket: "+err.Error()))
 		return
 	}
-	actor.StartActor(conn)
+	actor := actor.StartActor(conn)
+	IpLogger.Logf("Websocket upgrade for IP: %s. Assigned actor: %d", c.ClientIP(), actor.GetId())
 }

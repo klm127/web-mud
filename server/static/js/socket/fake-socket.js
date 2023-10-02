@@ -40,7 +40,7 @@ export default class FakeWebSocket {
         this.CLOSED = 3;
         this.jwt = '';
         this.poll = this.poll.bind(this);
-        this.interval_id = setInterval(this.poll, 1000);
+        this.interval_id = setTimeout(this.poll, 1000);
     }
     set onclose(cb) {
         if (cb == null) {
@@ -119,6 +119,7 @@ export default class FakeWebSocket {
             type: 'message',
             data: data,
         });
+        this.poll();
     }
     addEventListener(type, listener, options) {
         if (type == 'close') {
@@ -182,7 +183,7 @@ export default class FakeWebSocket {
         }
     }
     async poll() {
-        console.log('polling');
+        clearTimeout(this.interval_id);
         try {
             const response = await fetch(this.url, {
                 method: 'POST',
@@ -203,10 +204,10 @@ export default class FakeWebSocket {
         catch (e) {
             console.error('fake socket polling error: ', e);
         }
+        this.interval_id = setTimeout(this.poll, 1000);
     }
     handleServerMessages(servMessages) {
         for (let m of servMessages) {
-            console.log(m);
             if (m.event == 'open') {
                 this.emitOpen(m.data);
             }

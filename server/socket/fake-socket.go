@@ -1,11 +1,17 @@
 package socket
 
 import (
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
 )
 
+/*
+Implements an interface like the gorilla websocket, but is actually used with a series of HTTP routes.
+
+Instead of directly sending messages to and receiving messages from the client, fakeSocket caches the messages in slices. As the client polls the relevant
+*/
 type fakeSocket struct {
 	// to transmit to client
 	pending [][]byte
@@ -13,6 +19,7 @@ type fakeSocket struct {
 	received   [][]byte
 	rec_mutex  sync.Mutex
 	pend_mutex sync.Mutex
+	closed     bool
 }
 
 func NewFakeSocket() *fakeSocket {
@@ -42,7 +49,6 @@ func (fs *fakeSocket) addMessage(s string) {
 }
 
 func (fs *fakeSocket) popPending() [][]byte {
-	fmt.Println("popping pending")
 	fs.pend_mutex.Lock()
 	out := fs.pending
 	fs.pending = make([][]byte, 0)
@@ -58,5 +64,9 @@ func (fs *fakeSocket) WriteMessage(mtype int, val []byte) error {
 }
 
 func (fs *fakeSocket) Close() error {
+	sr := sock_response{"close", ""}
+	b, _ := json.Marshal(sr)
+	fs.pending = append(fs.pending, b)
+	fs.closed = true
 	return nil
 }

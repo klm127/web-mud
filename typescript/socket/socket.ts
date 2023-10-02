@@ -5,10 +5,10 @@ export function CreateWebSocket() {
 	console.log(url.host)
 	let socket: WebSocket
 	try {
-		socket = new FakeWebSocket(`http://${url.host}:80/sock/connect-http`)
-	} catch (e) {
 		socket = new WebSocket(`ws://${url.host}:80/sock/connect`)
+	} catch (e) {
+		socket = new FakeWebSocket(`http://${url.host}:80/sock/connect-http`)
 		console.error('got error', e)
 	}
-	return socket
+	return socket 
 }

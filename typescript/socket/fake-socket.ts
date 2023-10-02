@@ -59,7 +59,7 @@ export default class FakeWebSocket implements WebSocket {
 		this.CLOSED = 3
 		this.jwt = ''
 		this.poll = this.poll.bind(this)
-		this.interval_id = setInterval(this.poll, 1000)
+		this.interval_id = setTimeout(this.poll, 1000)
 	}
 
 	set onclose(cb: onCloseCb | null) {
@@ -140,6 +140,7 @@ export default class FakeWebSocket implements WebSocket {
 			type: 'message',
 			data: data,
 		})
+		this.poll()
 	}
 	addEventListener<K extends keyof WebSocketEventMap>(
 		type: K,
@@ -212,7 +213,7 @@ export default class FakeWebSocket implements WebSocket {
 	}
 
 	async poll() {
-		console.log('polling')
+		clearTimeout(this.interval_id)
 		try {
 			const response = await fetch(this.url, {
 				method: 'POST',
@@ -232,11 +233,11 @@ export default class FakeWebSocket implements WebSocket {
 		} catch (e) {
 			console.error('fake socket polling error: ', e)
 		}
+		this.interval_id = setTimeout(this.poll, 1000)
 	}
 
 	handleServerMessages(servMessages: Array<receiveMessage>) {
 		for (let m of servMessages) {
-			console.log(m)
 			if (m.event == 'open') {
 				this.emitOpen(m.data)
 			} else if (m.event == 'close') {
