@@ -1,6 +1,9 @@
 package world
 
-import "github.com/pwsdc/web-mud/interfaces/iworld"
+import (
+	"github.com/pwsdc/web-mud/interfaces/iworld"
+	"github.com/pwsdc/web-mud/world/commands"
+)
 
 type movements struct {
 	actively_moving map[iworld.IBeing]iworld.IMoveReq
@@ -12,6 +15,7 @@ func init() {
 	Movements = movements{
 		actively_moving: make(map[iworld.IBeing]iworld.IMoveReq),
 	}
+	commands.RegisterMoveManager(&Movements)
 }
 
 func (m *movements) New(move iworld.IMoveReq) {

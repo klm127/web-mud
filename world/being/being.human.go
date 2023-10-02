@@ -10,7 +10,7 @@ import (
 	"github.com/pwsdc/web-mud/interfaces/iworld"
 	"github.com/pwsdc/web-mud/server/user/actor/message"
 	"github.com/pwsdc/web-mud/shared/css"
-	"github.com/pwsdc/web-mud/world/being/commands"
+	"github.com/pwsdc/web-mud/world/commands"
 	"github.com/pwsdc/web-mud/world/sight"
 )
 
@@ -36,6 +36,7 @@ func NewHumanBeing(id int64, actor iactor.IActor) (iworld.IBeing, error) {
 	b := _initBeingHuman(actor, &b_data)
 	actor.SetCommandGroup(commands.SenseCommands)
 	actor.SetCommandGroup(commands.VoiceCommands)
+	actor.SetCommandGroup(commands.MoveCommands)
 	return b, nil
 }
 
