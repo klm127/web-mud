@@ -79,9 +79,16 @@ func (bh *beingHuman) SeeRoom() {
 	msg := message.New().Text(bh.room.Name()).Class(css.RoomName).NewLine(1).Next()
 	msg.Text(bh.room.Desc()).Class(css.RoomDesc)
 	bh.actor.Message(msg.Bytes())
+
+	bl := bh.room.GetOtherBeingNames(bh)
+	if len(bl) > 0 {
+		msg = message.New().Textf("Beings here: %s", bl)
+		bh.actor.Message(msg.Bytes())
+	}
+
 	dirs := bh.room.GetDirectionList()
 	if len(dirs) == 0 {
-		bh.actor.MessageSimplef("There seem to be no exits.")
+		bh.actor.Message(message.New().Text("There seem to be no exits.").Class(css.RoomDirections).Bytes())
 	} else {
 		msgdir := message.New().Class(css.RoomDirections).Text("You can go: ").Next().Text(bh.room.GetDirectionList())
 		bh.actor.Message(msgdir.Bytes())

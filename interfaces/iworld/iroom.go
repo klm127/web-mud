@@ -1,6 +1,8 @@
 package iworld
 
-import "github.com/pwsdc/web-mud/db/dbg"
+import (
+	"github.com/pwsdc/web-mud/db/dbg"
+)
 
 type IRoom interface {
 	IExists
@@ -9,6 +11,8 @@ type IRoom interface {
 	GetHere() []IExists
 	// Get beings here
 	GetBeingsHere() []IBeing
+	// Gets a string thats a comma seperated list of being names here.
+	GetOtherBeingNames(IBeing) string
 	// Add a being to this room
 	AddBeing(IBeing)
 	// Remove a being from this room

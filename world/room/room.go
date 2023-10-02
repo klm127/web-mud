@@ -56,6 +56,16 @@ func (r *troom) GetBeingsHere() []iworld.IBeing {
 	return here
 }
 
+func (r *troom) GetOtherBeingNames(being_asking iworld.IBeing) string {
+	here := make([]string, 0, len(r.beingsHere)-1)
+	for _, being := range r.beingsHere {
+		if being != being_asking {
+			here = append(here, being.Name())
+		}
+	}
+	return strings.Join(here, ", ")
+}
+
 func (r *troom) AddBeing(new_being iworld.IBeing) {
 	old_room := new_being.GetRoom()
 	if old_room == r {
