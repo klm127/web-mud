@@ -42,3 +42,16 @@ func (r *rooms) Get(id int64) iworld.IRoom {
 	fmt.Println("returning room", room_loaded.Name())
 	return room_loaded
 }
+
+func (r *rooms) SaveDirty() {
+	for _, v := range r.rooms {
+		i := 0
+		if v.IsDirty() {
+			v.Save()
+			i++
+		}
+		if i > 0 {
+			r.Logf("Saved %d rooms.", i)
+		}
+	}
+}

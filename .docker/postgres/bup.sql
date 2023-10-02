@@ -5,7 +5,7 @@
 -- Dumped from database version 15.4 (Debian 15.4-1.pgdg110+1)
 -- Dumped by pg_dump version 15.4 (Debian 15.4-1.pgdg110+1)
 
--- Started on 2023-09-12 18:50:55 UTC
+-- Started on 2023-10-02 18:01:19 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -29,7 +29,6 @@ CREATE DATABASE sdcmud WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVID
 
 ALTER DATABASE sdcmud OWNER TO sdcadmin;
 
-\connect sdcmud
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -141,7 +140,9 @@ CREATE TABLE mud.rooms (
     sw bigint,
     nw bigint,
     u bigint,
-    d bigint
+    d bigint,
+    i bigint,
+    o bigint
 );
 
 
@@ -243,6 +244,9 @@ ALTER TABLE ONLY mud.users ALTER COLUMN id SET DEFAULT nextval('mud.users_id_seq
 -- Data for Name: beings; Type: TABLE DATA; Schema: mud; Owner: sdcadmin
 --
 
+INSERT INTO mud.beings VALUES (1, 'Bob', '', 3, 1) ON CONFLICT DO NOTHING;
+INSERT INTO mud.beings VALUES (2, 'Tom', '', 3, 2) ON CONFLICT DO NOTHING;
+INSERT INTO mud.beings VALUES (3, 'bob', '', 3, 3) ON CONFLICT DO NOTHING;
 
 
 --
@@ -251,6 +255,7 @@ ALTER TABLE ONLY mud.users ALTER COLUMN id SET DEFAULT nextval('mud.users_id_seq
 -- Data for Name: rooms; Type: TABLE DATA; Schema: mud; Owner: sdcadmin
 --
 
+INSERT INTO mud.rooms VALUES (1, 'A formless void', 'Chaos swirls around. Something should have been here, but isn''t.', NULL, '{}', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL) ON CONFLICT DO NOTHING;
 
 
 --
@@ -259,6 +264,9 @@ ALTER TABLE ONLY mud.users ALTER COLUMN id SET DEFAULT nextval('mud.users_id_seq
 -- Data for Name: users; Type: TABLE DATA; Schema: mud; Owner: sdcadmin
 --
 
+INSERT INTO mud.users VALUES (1, 'Bob', '123', '2023-09-15 16:46:33.604018', '2023-09-15 16:46:33.604018', 'player', 1) ON CONFLICT DO NOTHING;
+INSERT INTO mud.users VALUES (2, 'Tom', '123', '2023-09-15 16:47:02.406692', '2023-09-15 16:47:02.406692', 'player', 2) ON CONFLICT DO NOTHING;
+INSERT INTO mud.users VALUES (3, 'bob', '123', '2023-10-02 17:34:08.121308', '2023-10-02 17:34:08.121308', 'player', 3) ON CONFLICT DO NOTHING;
 
 
 --
@@ -267,7 +275,7 @@ ALTER TABLE ONLY mud.users ALTER COLUMN id SET DEFAULT nextval('mud.users_id_seq
 -- Name: beings_id_seq; Type: SEQUENCE SET; Schema: mud; Owner: sdcadmin
 --
 
-SELECT pg_catalog.setval('mud.beings_id_seq', 1, false);
+SELECT pg_catalog.setval('mud.beings_id_seq', 3, true);
 
 
 --
@@ -276,7 +284,7 @@ SELECT pg_catalog.setval('mud.beings_id_seq', 1, false);
 -- Name: rooms_id_seq; Type: SEQUENCE SET; Schema: mud; Owner: sdcadmin
 --
 
-SELECT pg_catalog.setval('mud.rooms_id_seq', 1, false);
+SELECT pg_catalog.setval('mud.rooms_id_seq', 4, true);
 
 
 --
@@ -285,7 +293,7 @@ SELECT pg_catalog.setval('mud.rooms_id_seq', 1, false);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: mud; Owner: sdcadmin
 --
 
-SELECT pg_catalog.setval('mud.users_id_seq', 1, false);
+SELECT pg_catalog.setval('mud.users_id_seq', 3, true);
 
 
 --
@@ -315,7 +323,7 @@ ALTER TABLE ONLY mud.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
--- Completed on 2023-09-12 18:50:55 UTC
+-- Completed on 2023-10-02 18:01:19 UTC
 
 --
 -- PostgreSQL database dump complete

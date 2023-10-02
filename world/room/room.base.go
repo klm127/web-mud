@@ -1,8 +1,10 @@
 package room
 
 import (
+	"context"
 	"time"
 
+	"github.com/pwsdc/web-mud/db"
 	"github.com/pwsdc/web-mud/db/dbg"
 	"github.com/pwsdc/web-mud/shared"
 )
@@ -31,8 +33,28 @@ func _initRoomBase(data_room *dbg.MudRoom) *room_base {
 func (r *room_base) GetData() *dbg.MudRoom {
 	return r.data
 }
-func (r *room_base) Save() {
-	// todo: update query
+func (r *room_base) Save() error {
+	params := dbg.UpdateRoomParams{
+		ID:          r.data.ID,
+		Name:        r.data.Name,
+		Description: r.data.Description,
+		Objects:     r.data.Objects,
+		N:           r.data.N,
+		S:           r.data.S,
+		E:           r.data.E,
+		W:           r.data.W,
+		Ne:          r.data.Ne,
+		Nw:          r.data.Nw,
+		Se:          r.data.Se,
+		Sw:          r.data.Sw,
+		I:           r.data.I,
+		O:           r.data.O,
+		U:           r.data.U,
+		D:           r.data.D,
+	}
+	err := db.Store.Query.UpdateRoom(context.Background(), &params)
+	r.dirty = false
+	return err
 }
 func (r *room_base) IsDirty() bool {
 	return r.dirty

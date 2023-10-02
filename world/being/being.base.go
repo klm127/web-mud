@@ -37,19 +37,21 @@ func (b *beingBase) GetData() *dbg.MudBeing {
 	return b.data
 }
 
-func (b *beingBase) Save() {
+func (b *beingBase) Save() error {
+	var err error
 	if b.dirty {
 		params := dbg.UpdateBeingParams{
 			Description: b.data.Description,
 			Room:        b.data.Room,
 		}
-		err := db.Store.Query.UpdateBeing(context.Background(), &params)
+		err = db.Store.Query.UpdateBeing(context.Background(), &params)
 		if err != nil {
 			b.dirty = false
 		} else {
 			b.Logf("Error updating database: %s", err.Error())
 		}
 	}
+	return err
 
 }
 

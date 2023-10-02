@@ -119,6 +119,12 @@ func (r *troom) GetDirectionList() string {
 	if r.data.D.Valid {
 		possible = append(possible, language.ParseDirectionFull(enum.Down))
 	}
+	if r.data.I.Valid {
+		possible = append(possible, language.ParseDirectionFull(enum.In))
+	}
+	if r.data.O.Valid {
+		possible = append(possible, language.ParseDirectionFull(enum.Out))
+	}
 	return strings.Join(possible, ", ")
 }
 
@@ -143,10 +149,10 @@ func (room *troom) GetAdjacentID(v string) *int64 {
 		return &room.data.Sw.Int64
 	} else if dir == enum.SouthEast && room.data.Se.Valid {
 		return &room.data.Se.Int64
-	} else if dir == enum.In { // && room.data..Valid {
-		return nil
-	} else if dir == enum.Out { //& room.data. {
-		return nil // return &room.data.S.Int64
+	} else if dir == enum.In && room.data.I.Valid { // && room.data..Valid {
+		return &room.data.I.Int64
+	} else if dir == enum.Out && room.data.O.Valid { //& room.data. {
+		return &room.data.O.Int64
 	} else if dir == enum.Up && room.data.U.Valid {
 		return &room.data.U.Int64
 	} else if dir == enum.Down && room.data.D.Valid {

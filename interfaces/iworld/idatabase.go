@@ -8,7 +8,7 @@ type IDatabase[T interface{}] interface {
 	// Retrieve the underyling database data
 	GetData() T
 	// Save (save to database) if dirty
-	Save()
+	Save() error
 	// Return whether this is dirty
 	IsDirty() bool
 	// Get the database record id

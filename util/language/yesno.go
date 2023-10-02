@@ -20,5 +20,5 @@ func IsYesOrNo(txt string) (bool, error) {
 			return false, nil
 		}
 	}
-	return false, errors.New("Not a yes or a no.")
+	return false, errors.New("not a yes or a no")
 }

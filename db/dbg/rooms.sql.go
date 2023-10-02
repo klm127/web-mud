@@ -7,12 +7,13 @@ package dbg
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/lib/pq"
 )
 
 const createUnlinkedRoom = `-- name: CreateUnlinkedRoom :one
-insert into mud.rooms (name, description, objects) values ($1, $2, $3) returning id, name, description, img, objects, n, s, e, w, ne, se, sw, nw, u, d
+insert into mud.rooms (name, description, objects) values ($1, $2, $3) returning id, name, description, img, objects, n, s, e, w, ne, se, sw, nw, u, d, i, o
 `
 
 type CreateUnlinkedRoomParams struct {
@@ -40,12 +41,14 @@ func (q *Queries) CreateUnlinkedRoom(ctx context.Context, arg *CreateUnlinkedRoo
 		&i.Nw,
 		&i.U,
 		&i.D,
+		&i.I,
+		&i.O,
 	)
 	return i, err
 }
 
 const getRoom = `-- name: GetRoom :one
-select id, name, description, img, objects, n, s, e, w, ne, se, sw, nw, u, d from mud.rooms where id = $1
+select id, name, description, img, objects, n, s, e, w, ne, se, sw, nw, u, d, i, o from mud.rooms where id = $1
 `
 
 func (q *Queries) GetRoom(ctx context.Context, id int64) (MudRoom, error) {
@@ -67,12 +70,14 @@ func (q *Queries) GetRoom(ctx context.Context, id int64) (MudRoom, error) {
 		&i.Nw,
 		&i.U,
 		&i.D,
+		&i.I,
+		&i.O,
 	)
 	return i, err
 }
 
 const getRooms = `-- name: GetRooms :many
-select id, name, description, img, objects, n, s, e, w, ne, se, sw, nw, u, d from mud.rooms as rooms
+select id, name, description, img, objects, n, s, e, w, ne, se, sw, nw, u, d, i, o from mud.rooms as rooms
 `
 
 func (q *Queries) GetRooms(ctx context.Context) ([]MudRoom, error) {
@@ -100,6 +105,8 @@ func (q *Queries) GetRooms(ctx context.Context) ([]MudRoom, error) {
 			&i.Nw,
 			&i.U,
 			&i.D,
+			&i.I,
+			&i.O,
 		); err != nil {
 			return nil, err
 		}
@@ -112,4 +119,51 @@ func (q *Queries) GetRooms(ctx context.Context) ([]MudRoom, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateRoom = `-- name: UpdateRoom :exec
+update mud.rooms set name=$2, description=$3, img=$4, objects=$5, n=$6, s=$7, e=$8, w=$9, ne=$10, se=$11, sw=$12, nw=$13, u=$14, d=$15, i=$16, o=$17 where id=$1
+`
+
+type UpdateRoomParams struct {
+	ID          int64
+	Name        string
+	Description string
+	Img         sql.NullString
+	Objects     []int64
+	N           sql.NullInt64
+	S           sql.NullInt64
+	E           sql.NullInt64
+	W           sql.NullInt64
+	Ne          sql.NullInt64
+	Se          sql.NullInt64
+	Sw          sql.NullInt64
+	Nw          sql.NullInt64
+	U           sql.NullInt64
+	D           sql.NullInt64
+	I           sql.NullInt64
+	O           sql.NullInt64
+}
+
+func (q *Queries) UpdateRoom(ctx context.Context, arg *UpdateRoomParams) error {
+	_, err := q.exec(ctx, q.updateRoomStmt, updateRoom,
+		arg.ID,
+		arg.Name,
+		arg.Description,
+		arg.Img,
+		pq.Array(arg.Objects),
+		arg.N,
+		arg.S,
+		arg.E,
+		arg.W,
+		arg.Ne,
+		arg.Se,
+		arg.Sw,
+		arg.Nw,
+		arg.U,
+		arg.D,
+		arg.I,
+		arg.O,
+	)
+	return err
 }

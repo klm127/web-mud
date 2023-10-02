@@ -80,6 +80,8 @@ type MudRoom struct {
 	Nw          sql.NullInt64
 	U           sql.NullInt64
 	D           sql.NullInt64
+	I           sql.NullInt64
+	O           sql.NullInt64
 }
 
 type MudUser struct {

@@ -10,16 +10,18 @@ import (
 )
 
 var idle_cleaner_running bool
-var idle_dc_msg string
+
+// var idle_dc_msg string
 
 func StartIdleConnectionCleaner() {
 	interval := arg.Config.Socket.IdleCheckInterval()
 	timeout := float64(arg.Config.Socket.IdleTimeout())
 	idle_cleaner_running = true
 	traverser := getActorIdleTraverser(timeout)
+	secs := time.Duration(interval) * time.Second
 	for idle_cleaner_running {
 		actor.Traverse(traverser, false)
-		time.Sleep(time.Duration(interval) * time.Second)
+		time.Sleep(secs)
 	}
 }
 
