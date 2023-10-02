@@ -11,6 +11,7 @@ import (
 	"github.com/pwsdc/web-mud/server/user/actor/message"
 	"github.com/pwsdc/web-mud/shared/css"
 	"github.com/pwsdc/web-mud/world/being/commands"
+	"github.com/pwsdc/web-mud/world/sight"
 )
 
 type beingHuman struct {
@@ -46,12 +47,23 @@ func (bh *beingHuman) GetTimeSinceLastInteraction() time.Duration {
 
 // InRoom partial - setRoom
 
+var appear_msg_self = "You solidify."
+var appear_msg_others = "solidifies."
+
 func (b *beingHuman) SetRoom(room iworld.IRoom) {
+	first_room := false
 	if room == b.room {
 		return
 	}
+	if b.room == nil {
+		first_room = true
+	}
 	b.room = room
 	room.AddBeing(b)
+	if first_room {
+		emit := sight.NewSeen(b, &appear_msg_self, &appear_msg_others)
+		room.SightEmit(emit)
+	}
 	b.SeeRoom()
 }
 
@@ -70,14 +82,19 @@ func (bh *beingHuman) SeeRoom() {
 	if len(dirs) == 0 {
 		bh.actor.MessageSimplef("There seem to be no exits.")
 	} else {
-		msgdir := message.New().Text("You can go: ").Next().Text(bh.room.GetDirectionList())
+		msgdir := message.New().Class(css.RoomDirections).Text("You can go: ").Next().Text(bh.room.GetDirectionList())
 		bh.actor.Message(msgdir.Bytes())
 	}
 }
 
+var remove_sight_msg_self = "You evaporate."
+var remove_sight_msg_other = "evaporates."
+
 func (bh *beingHuman) Removing() {
 	bh.actor.RemoveCommandGroup(commands.SenseCommands)
 	bh.actor.RemoveCommandGroup(commands.VoiceCommands)
+	vis := sight.NewSeen(bh, &remove_sight_msg_self, &remove_sight_msg_other)
+	bh.room.SightEmit(vis)
 	bh.Save()
 	// Save inventory, etc?
 }
